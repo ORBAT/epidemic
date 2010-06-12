@@ -15,9 +15,12 @@ DEPENDPATH += /usr/local/qwt-5.2.1/include
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    city.cpp
+    city.cpp \
+    pathogen.cpp
 
 HEADERS  += mainwindow.h \
-    city.h
+    city.h \
+    pathogen.h \
+    constants.h
 
 FORMS    += mainwindow.ui
