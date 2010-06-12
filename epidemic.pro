@@ -9,6 +9,9 @@ QT       += core gui
 TARGET = epidemic
 TEMPLATE = app
 
+LIBS += -L /usr/local/qwt-5.2.1/lib -l qwt
+INCLUDEPATH += /usr/local/qwt-5.2.1/include
+DEPENDPATH += /usr/local/qwt-5.2.1/include
 
 SOURCES += main.cpp\
         mainwindow.cpp \

@@ -1,6 +1,15 @@
 #include "city.h"
 
-City::City(QObject *parent) :
-    QObject(parent)
-{
+namespace QtEpidemy {
+
+    City::City(amountType population, QObject *parent) :
+            QObject(parent), m_stats(new EpidemicStatistics(population))
+    {
+
+    }
+
+    void City::step() {
+
+    }
+
 }
