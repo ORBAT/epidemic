@@ -3,6 +3,8 @@
 
 #include <math.h>
 #include <QObject>
+#include <QReadWriteLock>
+#include <QVarLengthArray>
 #include "constants.h"
 
 namespace QtEpidemy {
@@ -42,7 +44,7 @@ namespace QtEpidemy {
         void dead(amountType);
         void quarantined(amountType);
 
-        void quarantineRate(amountType);    // NOTE: this will emit m_quarantineRate*100
+        void quarantineRate(amountType);
 
         void population(amountType);
 
@@ -52,6 +54,9 @@ namespace QtEpidemy {
 
         //// PROTECTED MEMBERS
         //////////////////////
+
+        QReadWriteLock lock;
+
         Pathogen *m_pathogen;        // our friendly affliction, if any
 
         QString m_name;
@@ -60,8 +65,9 @@ namespace QtEpidemy {
         ratioType m_bonusDuration;
         ratioType m_bonusInfectionRate;
         ratioType m_bonusSurvivalRate;
-        ratioType m_quarantineRate;  /* percentage of infected who are
-                                                   quarantined daily */
+
+        amountType m_quarantineRate;  /* PERCENTAGE (0-100) of infected who are
+                                         quarantined daily */
 
 
         ratioType m_survivalRate;    // percentage of infected who survive (0-1)
@@ -114,6 +120,11 @@ namespace QtEpidemy {
            daily_quarantined_deaths - daily_quarantined_recoveries) * dt */
         amountType m_quarantined;        // amount of people quarantined
 
+        /* pointers to all the member variables. This can be used to make setting/getting
+           statistics easier (no need for a bazillion setter/getter functions, slots etc */
+
+
+        QVarLengthArray<amountType*, (int)CS_MAX_STATS> m_amtMembers;
 
 
 
@@ -128,12 +139,14 @@ namespace QtEpidemy {
 
         inline void calcDaily_infected_deaths() {
             amountType newDInfDeaths = 0;
+            QReadLocker rlock(&lock);
             if(m_infected != 0) {
                 newDInfDeaths = (ratioType)m_infected *
                                 ((ratioType)1 - m_survivalRate);
             }
 
             if(newDInfDeaths != m_dailyInfectedDeaths) {
+                QWriteLocker wlock(&lock);
                 m_dailyInfectedDeaths = newDInfDeaths;
                 emit dailyInfectedDeaths(newDInfDeaths);
             }
@@ -142,12 +155,14 @@ namespace QtEpidemy {
 
         inline void calcDaily_quarantined_deaths() {
             amountType newDQDeaths = 0;
+            QReadLocker rlock(&lock);
             if(m_quarantined != 0) {
                 newDQDeaths = (ratioType)m_quarantined *
                               ((ratioType)1 - m_survivalRate);
             }
 
             if(newDQDeaths != m_dailyQuarantinedDeaths) {
+                QWriteLocker wlock(&lock);
                 m_dailyQuarantinedDeaths = newDQDeaths;
                 emit dailyQuarantinedDeaths(newDQDeaths);
             }
@@ -155,18 +170,22 @@ namespace QtEpidemy {
 
         inline void calcDaily_infected_recoveries() {
             amountType newDIRecover = 0;
+            QReadLocker rlock(&lock);
             if(m_infected != 0) {
                 newDIRecover = (ratioType)m_infected *
                                m_survivalRate / m_diseaseDuration;
             }
 
             if(newDIRecover != m_dailyInfectedRecoveries) {
+                QWriteLocker wlock(&lock);
                 m_dailyInfectedRecoveries = newDIRecover;
                 emit dailyInfectedRecoveries(m_dailyInfectedRecoveries);
             }
         }
 
         inline void calcDaily_quarantined_recoveries() {
+            QReadLocker rlock(&lock);
+            QWriteLocker wlock(&lock);
             m_dailyQuarantinedRecoveries = m_quarantined == 0 ? 0 :
                                                     (ratioType)m_quarantined *
                                                     m_survivalRate / m_diseaseDuration;
@@ -175,6 +194,7 @@ namespace QtEpidemy {
 
         inline void calcDaily_infections() {
             amountType newDInfections = 0;
+            QReadLocker rlock(&lock);
             if(m_infected != 0 &&  m_susceptible != 0) {
                 newDInfections = ceil((ratioType)m_infected *
                                       ((ratioType)m_susceptible *
@@ -182,6 +202,7 @@ namespace QtEpidemy {
             }
 
             if(newDInfections != m_dailyInfections) {
+                QWriteLocker wlock(&lock);
                 m_dailyInfections = newDInfections;
                 emit dailyInfections(newDInfections);
             }
@@ -190,20 +211,25 @@ namespace QtEpidemy {
 
         inline void calcDaily_quarantines() {
             amountType newDQuarantines = 0;
-            if(m_quarantineRate != 0 && m_infected != 0) {
+            QReadLocker rlock(&lock);
+
+            ratioType qRate = (ratioType)m_quarantineRate / 100.0;
+
+            if((qRate/100.0) != 0 && m_infected != 0) {
                 newDQuarantines = (ratioType)m_infected *
-                                  m_quarantineRate;
+                                  qRate;
             }
 
             if(newDQuarantines != m_dailyQuarantines) {
+                QWriteLocker wlock(&lock);
                 m_dailyQuarantines = newDQuarantines;
                 emit dailyQuarantines(newDQuarantines);
             }
         }
 
         inline void calcSusceptible() {
-
-
+            QReadLocker rl(&lock);
+            QWriteLocker wl(&lock);
             if(m_dailyInfections != 0) {
                 /* people are susceptible if they're not infected */
                 m_susceptible = (ratioType)m_susceptible -
@@ -216,6 +242,7 @@ namespace QtEpidemy {
         }
 
         inline void calcInfected() {
+            QReadLocker rl(&lock);
             amountType newinfected = m_infected +
                                      (m_dailyInfections -
                                       m_dailyInfectedRecoveries -
@@ -223,6 +250,7 @@ namespace QtEpidemy {
                                       m_dailyInfectedDeaths) * DT;
             clampToZero(newinfected);
             if(newinfected != m_infected) {
+                QWriteLocker rl(&lock);
                 m_infected = newinfected;
                 emit infected(newinfected);
             }
@@ -230,6 +258,7 @@ namespace QtEpidemy {
 
         inline void calcRecovered() {
             amountType newRecovered = 0;
+            QReadLocker rl(&lock);
             if(m_dailyInfectedRecoveries != 0 &&
                m_dailyQuarantinedRecoveries != 0) {
 
@@ -239,6 +268,7 @@ namespace QtEpidemy {
             }
 
             if(newRecovered != m_recovered) {
+                QWriteLocker wl(&lock);
                 m_recovered = newRecovered;
                 emit recovered(newRecovered);
             }
@@ -246,9 +276,11 @@ namespace QtEpidemy {
         }
 
         inline void calcDead() {
+            QReadLocker rl(&lock);
             amountType newDead = m_dead + (m_dailyInfectedDeaths +
                                                   m_dailyQuarantinedDeaths) * DT;
             if(newDead != m_dead) {
+                QWriteLocker wl(&lock);
                 m_dead = newDead;
                 emit dead(newDead);
             }
@@ -256,21 +288,25 @@ namespace QtEpidemy {
         }
 
         inline void calcQuarantined() {
+            QReadLocker rl(&lock);
             amountType newQuarantined =m_quarantined + (m_dailyQuarantines -
                                                                m_dailyQuarantinedDeaths-
                                                                m_dailyQuarantinedRecoveries)
                     * DT;
             clampToZero(newQuarantined);
             if(newQuarantined != m_quarantined) {
+                QWriteLocker wl(&lock);
                 m_quarantined = newQuarantined;
                 emit quarantined(newQuarantined);
             }
         }
 
         inline void calcPopulation() {
+            QReadLocker rl(&lock);
             amountType newPopulation = m_susceptible + m_infected + m_recovered +
                                        m_quarantined + m_dead;
             if(newPopulation != m_population) {
+                QWriteLocker wl(&lock);
                 m_population = newPopulation;
                 emit population(newPopulation);
             }

@@ -3,8 +3,6 @@
 
 #include <QObject>
 #include <QReadWriteLock>
-#include <QWriteLocker>
-#include <QReadLocker>
 #include "constants.h"
 
 
