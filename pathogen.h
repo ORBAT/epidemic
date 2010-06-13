@@ -2,7 +2,11 @@
 #define PATHOGEN_H
 
 #include <QObject>
+#include <QReadWriteLock>
+#include <QWriteLocker>
+#include <QReadLocker>
 #include "constants.h"
+
 
 namespace QtEpidemy {
 
@@ -14,22 +18,20 @@ namespace QtEpidemy {
                           ratioType duration = 0, QObject *parent = 0);
 
     public slots:
-        void setSurvivalRate(ratioType);
-        void setInfectionRate(ratioType);
-        void setDiseaseDuration(ratioType);
+        void setStatistic(PathogenStats,ratioType);
+
+        void forceStatEmit();
 
 
     signals:
-        void changed(Pathogen const *);
+        void statChanged(PathogenStats, ratioType);
 
     protected:
-         ratioType m_survivalRate;
-         ratioType m_infectionRate;
-         ratioType m_diseaseDuration;
+        QReadWriteLock lock;
 
-    public slots:
+        // PS_MAX_STATS in constants.h enum PathogenStats
+        ratioType m_stats[PS_MAX_STATS];
 
-         void setStatistic(PathogenStats,ratioType);
 
     };
 

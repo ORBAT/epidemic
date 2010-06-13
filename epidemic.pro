@@ -16,11 +16,14 @@ DEPENDPATH += /usr/local/qwt-5.2.1/include
 SOURCES += main.cpp\
         mainwindow.cpp \
     city.cpp \
-    pathogen.cpp
+    pathogen.cpp \
+    mdiplot.cpp
 
 HEADERS  += mainwindow.h \
     city.h \
     pathogen.h \
-    constants.h
+    constants.h \
+    mdiplot.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    mdiplot.ui

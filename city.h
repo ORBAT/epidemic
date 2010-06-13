@@ -21,10 +21,14 @@ namespace QtEpidemy {
     {
         Q_OBJECT
     public:
-        explicit City(QString name, amountType lation, QObject *parent = 0);
+        explicit City(QString name, amountType population, QObject *parent = 0);
 
     signals:
         // announce the city's daily status
+        /* I think these are better kept as separate signals. If a single signal like
+           statUpdated(CityStats, amountType) was used exclusively, even listeners who don't
+           want, say, information about daily infections would receive the signal anyhow */
+
         void dailyInfectedDeaths(amountType);
         void dailyQuarantinedDeaths(amountType);
         void dailyInfectedRecoveries(amountType);
@@ -37,6 +41,10 @@ namespace QtEpidemy {
         void recovered(amountType);
         void dead(amountType);
         void quarantined(amountType);
+
+        void quarantineRate(amountType);    // NOTE: this will emit m_quarantineRate*100
+
+        void population(amountType);
 
         //// PROTECTED
         //////////////
@@ -82,6 +90,10 @@ namespace QtEpidemy {
 
         // susceptible(t) = susceptible(t - dt) + (-daily_infections) * dt
         amountType m_susceptible;        // amount of people susceptible to the disease
+
+        /* population(t) = susceptible(t) + infected(t) + quarantined(t) + recovered(t) +
+           dead(t) */
+        amountType m_population;         // the current population of the city
 
         /* infected(t) = infected(t - dt) + (daily_infections - daily_infected_recoveries -
            daily_quarantines - daily_infected_deaths) * dt */
@@ -255,6 +267,15 @@ namespace QtEpidemy {
             }
         }
 
+        inline void calcPopulation() {
+            amountType newPopulation = m_susceptible + m_infected + m_recovered +
+                                       m_quarantined + m_dead;
+            if(newPopulation != m_population) {
+                m_population = newPopulation;
+                emit population(newPopulation);
+            }
+        }
+
 
 
 
@@ -266,7 +287,11 @@ namespace QtEpidemy {
 
         void setPathogen(Pathogen*);
 
+        void pathogenStatChanged(PathogenStats, ratioType);
+
         void setBonus(PathogenStats, ratioType);
+
+        void emitStat(CityStats);                    // forces an emit of a statistic
 
 
     };

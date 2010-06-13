@@ -1,7 +1,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#endif // CONSTANTS_H
+
 
 #include <qglobal.h>
 
@@ -10,7 +10,13 @@ namespace QtEpidemy {
 
     typedef float ratioType;
     typedef qint32 amountType;
-    enum PathogenStats { SURVIVAL, INFECTION, DURATION };
+
+    enum PathogenStats { PS_SURVIVAL, PS_INFECTION, PS_DURATION, PS_MAX_STATS };
+
+    enum CityStats { CS_D_INF_DEATHS, CS_D_QUAR_DEATHS, CS_D_INF_RECOVER, CS_D_QUAR_RECOVER,
+                     CS_D_INFECTIONS, CS_D_QUARANTINES, CS_SUSCEPTIBLE, CS_INFECTED,
+                     CS_RECOVERED, CS_DEAD, CS_QUARANTINED, CS_QUAR_RATE };
+
 
     template<typename T>
     inline void clampToZero(T& val) {
@@ -19,3 +25,4 @@ namespace QtEpidemy {
         }
     }
 }
+#endif // CONSTANTS_H
