@@ -3,12 +3,14 @@
 
 #include <QWidget>
 #include "constants.h"
+#include "qwt_array.h"
 
 namespace Ui {
     class MdiPlot;
 }
 
 class QwtPlotCurve;
+
 
 
 namespace QtEpidemy {
@@ -20,12 +22,15 @@ namespace QtEpidemy {
         Q_OBJECT
 
     public:
-        explicit MdiPlot(City *c, QWidget *parent = 0);
+        explicit MdiPlot(City *c, int plotSize, QWidget *parent = 0);
         ~MdiPlot();
 
     protected:
         void changeEvent(QEvent *e);
         City *m_city;
+        int m_plotSize;
+        double *m_arrx;
+        double *m_arry;
 
 
     protected slots:

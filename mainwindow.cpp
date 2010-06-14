@@ -1,8 +1,10 @@
 #include <QDebug>
+#include <QTimer>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "city.h"
 #include "pathogen.h"
+#include "mdiplot.h"
 
 namespace QtEpidemy {
 
@@ -19,7 +21,15 @@ namespace QtEpidemy {
         p->setStatistic(PS_INFECTION, 0.002);
         p->setStatistic(PS_SURVIVAL, 0.9);
 
+        MdiPlot *mp = new MdiPlot(c, 20);
 
+        ui->centralWidget->addSubWindow(mp);
+        QTimer *timer = new QTimer(this);
+        connect(timer, SIGNAL(timeout()), c, SLOT(step()));
+        c->addInfected(1);
+        //timer->start(900);
+        c->step();
+        c->step();
     }
 
 

@@ -59,20 +59,21 @@ namespace QtEpidemy {
 
     void City::step() {
 
+        qDebug("City::step()");
         /*
          These calculations are done in this order to prevent people who get infected
          from getting quarantined or dying during the same step
         */
 
         // calculate daily amounts at the start of each step
-        calcDaily_infected_deaths();
-        calcDaily_quarantined_deaths();
+        calcDailyInfectedDeaths();
+        calcDailyQuarantinedDeaths();
 
-        calcDaily_infected_recoveries();
-        calcDaily_quarantined_recoveries();
+        calcDailyInfectedRecoveries();
+        calcDailyQuarantinedRecoveries();
 
-        calcDaily_infections();
-        calcDaily_quarantines();
+        calcDailyInfections();
+        calcDailyQuarantines();
 
         // then kill off some infected
         calcDead();
@@ -90,13 +91,13 @@ namespace QtEpidemy {
     void City::setPathogen(Pathogen *pp) {
         {
             qDebug() << "City" << m_name <<  "City::setPathogen()" << pp;
-            QReadLocker rl(&lock);
+
             if(m_pathogen != NULL) {
                 // disconnect us from all of the previous pathogen's signals
                 disconnect(m_pathogen, 0, this,0);
             }
         }
-        QWriteLocker wl(&lock);
+
         m_pathogen = pp;
         this->connect(m_pathogen, SIGNAL(statChanged(PathogenStats,ratioType)),
                       SLOT(pathogenStatChanged(PathogenStats,ratioType)));
@@ -104,7 +105,7 @@ namespace QtEpidemy {
     }
 
     void City::setBonus(PathogenStats pst, ratioType rt) {
-        QWriteLocker wl(&lock);
+
         switch(pst) {
         case PS_SURVIVAL:
             m_bonusSurvivalRate = rt;
@@ -123,7 +124,7 @@ namespace QtEpidemy {
 
 
     void City::emitStat(CityStats cs) {
-        QWriteLocker wl(&lock);
+
         switch(cs) {
         case CS_D_INF_DEATHS:
             qDebug() << "City" << m_name <<  "City::emitStat() CS_D_INF_DEATHS";
@@ -179,7 +180,7 @@ namespace QtEpidemy {
     }
 
     void City::pathogenStatChanged(PathogenStats ps, ratioType rt) {
-        QWriteLocker wl(&lock);
+
         switch(ps) {
         case PS_DURATION:
             qDebug() << "City" << m_name <<  "City::pathogenStatChanged() PS_DURATION"<<rt;
@@ -198,6 +199,9 @@ namespace QtEpidemy {
         }
     }
 
+    void City::addInfected(amountType at) {
+        m_infected += at;
+    }
 
 
 }

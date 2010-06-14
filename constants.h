@@ -8,7 +8,7 @@
 namespace QtEpidemy {
     const static float DT = 1.0/24.0;  // how many DAYS elapse between steps. 1/24 = 1h
 
-    typedef float ratioType;
+    typedef double ratioType;
     typedef qint32 amountType;
 
     enum PathogenStats { PS_SURVIVAL, PS_INFECTION, PS_DURATION, PS_MAX_STATS };
