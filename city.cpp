@@ -12,9 +12,9 @@ namespace QtEpidemy {
             m_bonusInfectionRate(0),
             m_bonusSurvivalRate(0),
             m_quarantineRate(0),
-            m_survivalRate((ratioType)0),      // from the pathogen
-            m_infectionRate((ratioType)0),     // ditto
-            m_diseaseDuration((ratioType)0),   // same here
+            m_survivalRate(0),      // from the pathogen
+            m_infectionRate(0),     // ditto
+            m_diseaseDuration(0),   // same here
             m_dailyInfectedDeaths(0),
             m_dailyQuarantinedDeaths(0),
             m_dailyInfectedRecoveries(0),
@@ -27,27 +27,28 @@ namespace QtEpidemy {
             m_recovered(0),
             m_dead(0),
             m_quarantined(0),
-            m_amtMembers((int)CS_MAX_STATS)
+            m_memberPointers((int)CS_MAX_STATS)
     {
         qDebug() << tr("City() %1 constructed with population %2").arg(name).arg(population);
 
         // zero the array
         for(int i = 0; i < CS_MAX_STATS; ++i) {
-            m_amtMembers[i] = (amountType)0;
+            m_memberPointers[i] = NULL;
         }
 
-        m_amtMembers[CS_D_INF_DEATHS] = &m_dailyInfectedDeaths;
-        m_amtMembers[CS_D_QUAR_DEATHS] = &m_dailyQuarantinedDeaths;
-        m_amtMembers[CS_D_INF_RECOVER] = &m_dailyInfectedRecoveries;
-        m_amtMembers[CS_D_QUAR_RECOVER] = &m_dailyQuarantinedRecoveries;
-        m_amtMembers[CS_D_INFECTIONS] = &m_dailyInfections;
-        m_amtMembers[CS_D_QUARANTINES] = &m_dailyQuarantines;
-        m_amtMembers[CS_SUSCEPTIBLE] = &m_susceptible;
-        m_amtMembers[CS_INFECTED] = &m_infected;
-        m_amtMembers[CS_RECOVERED] = &m_recovered;
-        m_amtMembers[CS_DEAD] = &m_dead;
-        m_amtMembers[CS_QUARANTINED] = &m_quarantined;
-        m_amtMembers[CS_QUAR_RATE] = &m_quarantineRate;
+        m_memberPointers[CS_D_INF_DEATHS] = &m_dailyInfectedDeaths;
+        m_memberPointers[CS_D_QUAR_DEATHS] = &m_dailyQuarantinedDeaths;
+        m_memberPointers[CS_D_INF_RECOVER] = &m_dailyInfectedRecoveries;
+        m_memberPointers[CS_D_QUAR_RECOVER] = &m_dailyQuarantinedRecoveries;
+        m_memberPointers[CS_D_INFECTIONS] = &m_dailyInfections;
+        m_memberPointers[CS_D_QUARANTINES] = &m_dailyQuarantines;
+        m_memberPointers[CS_SUSCEPTIBLE] = &m_susceptible;
+        m_memberPointers[CS_INFECTED] = &m_infected;
+        m_memberPointers[CS_RECOVERED] = &m_recovered;
+        m_memberPointers[CS_DEAD] = &m_dead;
+        m_memberPointers[CS_QUARANTINED] = &m_quarantined;
+        m_memberPointers[CS_QUAR_RATE] = &m_quarantineRate;
+        m_memberPointers[CS_POPULATION] = &m_population;
 
 
     }
@@ -67,13 +68,17 @@ namespace QtEpidemy {
 
         // calculate daily amounts at the start of each step
         calcDailyInfectedDeaths();
+
         calcDailyQuarantinedDeaths();
 
         calcDailyInfectedRecoveries();
+
         calcDailyQuarantinedRecoveries();
 
         calcDailyInfections();
+
         calcDailyQuarantines();
+
 
         // then kill off some infected
         calcDead();
@@ -83,9 +88,16 @@ namespace QtEpidemy {
 
         // next the new values of susceptible/infected (order doesn't matter)
         calcSusceptible();
+
         calcInfected();
 
         calcPopulation();
+
+        for(int i = 0; i < CS_MAX_STATS; ++i) { // emit all stats
+            emitStat((CityStats)i);
+        }
+
+        emit stepped(); /* so that plots know when they need to redraw their data */
     }
 
     void City::setPathogen(Pathogen *pp) {
@@ -124,59 +136,8 @@ namespace QtEpidemy {
 
 
     void City::emitStat(CityStats cs) {
-
-        switch(cs) {
-        case CS_D_INF_DEATHS:
-            qDebug() << "City" << m_name <<  "City::emitStat() CS_D_INF_DEATHS";
-            emit dailyInfectedDeaths(m_dailyInfectedDeaths);
-            break;
-        case CS_D_QUAR_DEATHS:
-            qDebug() << "City" << m_name <<  "City::emitStat() CS_D_QUAR_DEATHS";
-            emit dailyQuarantinedDeaths(m_dailyQuarantinedDeaths);
-            break;
-        case CS_D_INF_RECOVER:
-            qDebug() << "City" << m_name <<  "City::emitStat() CS_D_INF_RECOVER";
-            emit dailyInfectedRecoveries(m_dailyInfectedRecoveries);
-            break;
-        case CS_D_QUAR_RECOVER:
-            qDebug() << "City" << m_name <<  "City::emitStat() CS_D_QUAR_RECOVER";
-            emit dailyQuarantinedRecoveries(m_dailyQuarantinedRecoveries);
-            break;
-        case CS_D_INFECTIONS:
-            qDebug() << "City" << m_name <<  "City::emitStat() CS_D_INFECTIONS";
-            emit dailyInfections(m_dailyInfections);
-            break;
-        case CS_D_QUARANTINES:
-            qDebug() << "City" << m_name <<  "City::emitStat() CS_D_QUARANTINES";
-            emit dailyQuarantines(m_dailyQuarantines);
-            break;
-        case CS_SUSCEPTIBLE:
-            qDebug() << "City" << m_name <<  "City::emitStat() CS_SUSCEPTIBLE";
-            emit susceptible(m_susceptible);
-            break;
-        case CS_INFECTED:
-            qDebug() << "City" << m_name <<  "City::emitStat() CS_INFECTED";
-            emit infected(m_infected);
-            break;
-        case CS_RECOVERED:
-            qDebug() << "City" << m_name <<  "City::emitStat() CS_RECOVERED";
-            emit recovered(m_recovered);
-            break;
-        case CS_DEAD:
-            qDebug() << "City" << m_name <<  "City::emitStat() CS_DEAD";
-            emit dead(m_dead);
-            break;
-        case CS_QUARANTINED:
-            qDebug() << "City" << m_name <<  "City::emitStat() CS_QUARANTINED";
-            emit quarantined(m_quarantined);
-            break;
-        case CS_QUAR_RATE:
-            qDebug() << "City" << m_name <<  "City::emitStat() CS_QUAR_RATE";
-            emit quarantineRate(m_quarantineRate);
-            break;
-        default:
-            qDebug() << "City" << m_name <<  "City::emitStat() got weird cs" << cs;
-        }
+        qDebug() << tr("%1 emitting cs %2 (%3)").arg("City::emitStat();").arg(cs).arg((amountType)*m_memberPointers[cs]);
+        emit statUpdate(cs, *m_memberPointers[cs]);
     }
 
     void City::pathogenStatChanged(PathogenStats ps, ratioType rt) {

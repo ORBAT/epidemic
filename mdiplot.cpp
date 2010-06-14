@@ -43,8 +43,10 @@ namespace QtEpidemy {
         // disable caching
         ui->qwtPlot->canvas()->setPaintAttribute(QwtPlotCanvas::PaintCached, false);
         ui->qwtPlot->canvas()->setPaintAttribute(QwtPlotCanvas::PaintPacked, false);
+
         ui->qwtPlot->setAxisScale(QwtPlot::xBottom, 0, m_plotSize);
         ui->qwtPlot->setAxisScale(QwtPlot::yLeft, 0, 1000000);
+
 
         this->connect(m_city, SIGNAL(infected(amountType)), SLOT(rcvInfected(amountType)));
         //this->connect(m_city, SIGNAL(susceptible(amountType)), SLOT(rcvSusceptible(amountType)));
@@ -67,12 +69,12 @@ namespace QtEpidemy {
         }
 
         m_arry[m_plotSize-1] = (double)at;
-        ui->qwtPlot->replot();
+        //ui->qwtPlot->replot();
     }
 
     void MdiPlot::rcvSusceptible(amountType at) {
         // TODO
-        ui->qwtPlot->replot();
+        //ui->qwtPlot->replot();
     }
 
     void MdiPlot::changeEvent(QEvent *e)

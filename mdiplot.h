@@ -32,6 +32,8 @@ namespace QtEpidemy {
         double *m_arrx;
         double *m_arry;
 
+        bool m_dataChanged;
+
 
     protected slots:
         void rcvSusceptible(amountType);

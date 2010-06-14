@@ -49,7 +49,9 @@ namespace QtEpidemy {
 
         void population(amountType);
 
-        void statUpdated(CityStats, amountType);
+        void statUpdate(CityStats, amountType);
+
+        void stepped();
 
         //// PROTECTED
         //////////////
@@ -68,7 +70,7 @@ namespace QtEpidemy {
         ratioType m_bonusInfectionRate;
         ratioType m_bonusSurvivalRate;
 
-        amountType m_quarantineRate;  /* PERCENTAGE (0-100) of infected who are
+        ratioType m_quarantineRate;  /* PERCENTAGE (0-100) of infected who are
                                          quarantined daily */
 
 
@@ -78,55 +80,55 @@ namespace QtEpidemy {
 
 
         // infected * (1 - survival_rate) / disease_duration
-        amountType m_dailyInfectedDeaths; // daily deaths among non-quarantined lation
+        ratioType m_dailyInfectedDeaths; // daily deaths among non-quarantined lation
 
         // quarantined * (1 - survival_rate) / disease_duration
-        amountType m_dailyQuarantinedDeaths;// daily deaths among the quarantined
+        ratioType m_dailyQuarantinedDeaths;// daily deaths among the quarantined
 
         // infected * survival_rate / disease_duration
-        amountType m_dailyInfectedRecoveries;// amount of infected who recover daily
+        ratioType m_dailyInfectedRecoveries;// amount of infected who recover daily
 
         // quarantined * survival_rate / disease_duration
-        amountType m_dailyQuarantinedRecoveries;// amount of quarantined who recover daily
+        ratioType m_dailyQuarantinedRecoveries;// amount of quarantined who recover daily
 
 
         // infected * susceptible * infection_rate
-        amountType m_dailyInfections;   // amount of daily infections
+        ratioType m_dailyInfections;   // amount of daily infections
 
         // infected * quarantine_rate
-        amountType m_dailyQuarantines;  // amount of people quarantined daily
+        ratioType m_dailyQuarantines;  // amount of people quarantined daily
 
         // susceptible(t) = susceptible(t - dt) + (-daily_infections) * dt
-        amountType m_susceptible;        // amount of people susceptible to the disease
+        ratioType m_susceptible;        // amount of people susceptible to the disease
 
         /* population(t) = susceptible(t) + infected(t) + quarantined(t) + recovered(t) +
            dead(t) */
-        amountType m_population;         // the current population of the city
+        ratioType m_population;         // the current population of the city
 
         /* infected(t) = infected(t - dt) + (daily_infections - daily_infected_recoveries -
            daily_quarantines - daily_infected_deaths) * dt */
         // Starts out at 1
-        amountType m_infected;         // amount of peolpe who are infected
+        ratioType m_infected;         // amount of peolpe who are infected
 
         /* recovered(t) = recovered(t - dt) + (daily_infected_recoveries +
        daily_quarantined_recoveries) * dt */
-        amountType m_recovered;          /* amount of people who have recovered or are
+        ratioType m_recovered;          /* amount of people who have recovered or are
                                           otherwise resistant */
 
         /* dead(t) = dead(t - dt) + (daily_infected_deaths +
            daily_quarantined_deaths) * dt */
-        amountType m_dead;               // amount of people who have died
+        ratioType m_dead;               // amount of people who have died
 
 
         /* quarantined(t) = quarantined(t - dt) + (daily_quarantines -
            daily_quarantined_deaths - daily_quarantined_recoveries) * dt */
-        amountType m_quarantined;        // amount of people quarantined
+        ratioType m_quarantined;        // amount of people quarantined
 
         /* pointers to all the member variables. This can be used to make setting/getting
            statistics easier (no need for a bazillion setter/getter functions, slots etc */
 
 
-        QVarLengthArray<amountType*, (int)CS_MAX_STATS> m_amtMembers;
+        QVarLengthArray<ratioType*, (int)CS_MAX_STATS> m_memberPointers;
 
 
 
@@ -140,42 +142,42 @@ namespace QtEpidemy {
          */
 
         inline void calcDailyInfectedDeaths() {
-            amountType val = 0;
+            ratioType val = 0;
 
             if(m_infected != 0) {
-                val = (ratioType)m_infected *
-                                ((ratioType)1 - m_survivalRate);
+                val = m_infected *
+                                (1.0 - m_survivalRate);
                 qDebug() << tr("%3 new %1, old %2").arg(val).arg(m_dailyInfectedDeaths).arg("calcDailyInfectedDeaths();");
             }
 
             if(val != m_dailyInfectedDeaths) {
 
                 m_dailyInfectedDeaths = val;
-                emit dailyInfectedDeaths(val);
+                emit dailyInfectedDeaths(m_dailyInfectedDeaths);
             }
 
         }
 
         inline void calcDailyQuarantinedDeaths() {
-            amountType val = 0;
+            ratioType val = 0;
 
             if(m_quarantined != 0) {
-                val = (ratioType)m_quarantined *
-                              ((ratioType)1 - m_survivalRate);
+                val = m_quarantined *
+                              (1.0 - m_survivalRate);
             }
 
             if(val != m_dailyQuarantinedDeaths) {
 
                 m_dailyQuarantinedDeaths = val;
-                emit dailyQuarantinedDeaths(val);
+                emit dailyQuarantinedDeaths(m_dailyQuarantinedDeaths);
             }
         }
 
         inline void calcDailyInfectedRecoveries() {
-            amountType val = 0;
+            ratioType val = 0;
 
             if(m_infected != 0) {
-                val = (ratioType)m_infected *
+                val = m_infected *
                                m_survivalRate / m_diseaseDuration;
                 qDebug() << tr("%3 new %1, old %2").arg(val).arg(m_dailyInfectedRecoveries).arg("calcDailyInfectedRecoveries();");
             }
@@ -188,9 +190,9 @@ namespace QtEpidemy {
         }
 
         inline void calcDailyQuarantinedRecoveries() {
-            amountType val = 0;
+            ratioType val = 0;
             if(m_quarantined != 0) {
-                val = (ratioType)m_quarantined *
+                val = m_quarantined *
                          m_survivalRate / m_diseaseDuration;
             }
 
@@ -202,11 +204,11 @@ namespace QtEpidemy {
         }
 
         inline void calcDailyInfections() {
-            amountType val = 0;
+            ratioType val = 0;
 
             if(m_infected != 0 &&  m_susceptible != 0) {
-                val = (ratioType)m_infected *
-                                      ((ratioType)m_susceptible *
+                val = m_infected *
+                                      (m_susceptible *
                                        m_infectionRate);
                 qDebug() << tr("%3 new %1, old %2").arg(val).arg(m_dailyInfections).arg("calcDailyInfections();");
             }
@@ -214,26 +216,22 @@ namespace QtEpidemy {
             if(val != m_dailyInfections) {
 
                 m_dailyInfections = val;
-                emit dailyInfections(val);
+                emit dailyInfections(m_dailyInfections);
             }
 
         }
 
         inline void calcDailyQuarantines() {
-            amountType val = 0;
+            ratioType val = 0;
 
-
-            ratioType qRate = (ratioType)m_quarantineRate / 100.0;
-
-            if((qRate/100.0) != 0 && m_infected != 0) {
-                val = (ratioType)m_infected *
-                                  qRate;
+            if((m_quarantineRate) != 0 && m_infected != 0) {
+                val = m_infected * m_quarantineRate;
             }
 
             if(val != m_dailyQuarantines) {
 
                 m_dailyQuarantines = val;
-                emit dailyQuarantines(val);
+                emit dailyQuarantines(m_dailyQuarantines);
             }
         }
 
@@ -241,8 +239,8 @@ namespace QtEpidemy {
 
             if(m_dailyInfections != 0) {
                 /* people are susceptible if they're not infected */
-                m_susceptible = (ratioType)m_susceptible -
-                                (ratioType)m_dailyInfections * DT;
+                m_susceptible = m_susceptible -
+                                m_dailyInfections * DT;
                 clampToZero(m_susceptible);
 
                 qDebug() << tr("%2 new %1").arg(m_susceptible).arg("calcSusceptible();");
@@ -255,7 +253,7 @@ namespace QtEpidemy {
 
         inline void calcInfected() {
 
-            amountType val = m_infected +
+            ratioType val = m_infected +
                              (m_dailyInfections -
                               m_dailyInfectedRecoveries -
                               m_dailyQuarantines -
@@ -264,12 +262,12 @@ namespace QtEpidemy {
             qDebug() << tr("%3 new %1, old %2").arg(val).arg(m_infected).arg("calcInfected();");
             if(val != m_infected) {
                 m_infected = val;
-                emit infected(val);
+                emit infected(m_infected);
             }
         }
 
         inline void calcRecovered() {
-            amountType val = 0;
+            ratioType val = 0;
 
             if(m_dailyInfectedRecoveries != 0 &&
                m_dailyQuarantinedRecoveries != 0) {
@@ -282,13 +280,13 @@ namespace QtEpidemy {
 
             if(val != m_recovered) {
                 m_recovered = val;
-                emit recovered(val);
+                emit recovered(m_recovered);
             }
 
         }
 
         inline void calcDead() {
-            amountType val = 0;
+            ratioType val = 0;
             if(m_dailyInfectedDeaths != 0 || m_dailyQuarantinedDeaths != 0) {
                 val = m_dead + (m_dailyInfectedDeaths +
                                 m_dailyQuarantinedDeaths) * DT;
@@ -297,33 +295,33 @@ namespace QtEpidemy {
 
             if(val != m_dead) {
                 m_dead = val;
-                emit dead(val);
+                emit dead(m_dead);
             }
 
         }
 
         inline void calcQuarantined() {
 
-            amountType newQuarantined =m_quarantined + (m_dailyQuarantines -
+            ratioType val =m_quarantined + (m_dailyQuarantines -
                                                         m_dailyQuarantinedDeaths-
                                                         m_dailyQuarantinedRecoveries)
                     * DT;
-            clampToZero(newQuarantined);
-            if(newQuarantined != m_quarantined) {
+            clampToZero(val);
+            if(val != m_quarantined) {
 
-                m_quarantined = newQuarantined;
-                emit quarantined(newQuarantined);
+                m_quarantined = val;
+                emit quarantined(m_quarantined);
             }
         }
 
         inline void calcPopulation() {
-
-            amountType val = m_susceptible + m_infected + m_recovered +
-                             m_quarantined + m_dead;
+            // Count every person who's still alive
+            ratioType val = m_susceptible + m_infected + m_recovered +
+                             m_quarantined;
             qDebug() << tr("%3 new %1, old %2").arg(val).arg(m_population).arg("calcPopulation();");
             if(val  != m_population) {
                 m_population = val ;
-                emit population(val );
+                emit population(m_population);
             }
         }
 
