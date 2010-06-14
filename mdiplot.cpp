@@ -1,3 +1,4 @@
+#include <QDebug>
 #include "mdiplot.h"
 #include "ui_mdiplot.h"
 #include "qwt_plot_curve.h"
@@ -11,8 +12,9 @@ namespace QtEpidemy {
             QWidget(parent),
             m_city(c),
             m_plotSize(plotSize),
-            m_arrx(new double[plotSize]),
-            m_arry(new double[plotSize]),
+            m_xarray(new double[plotSize]),
+            m_scaleBy(CS_POPULATION),
+            m_numCurves(0),
             ui(new Ui::MdiPlot)
     {
 
@@ -20,62 +22,113 @@ namespace QtEpidemy {
 
         ::QwtPainter::setDeviceClipping(false); // disable polygon clipping
         ui->setupUi(this);
-        QwtPlotCurve *inf = new QwtPlotCurve(tr("Infected"));
-        QwtPlotCurve *sus = new QwtPlotCurve(tr("Susceptible"));
-
-        //inf->setData(*m_x, *m_y);
-        //sus->setData(*m_x, *m_y2);
-
-
-        sus->setPen(QPen(Qt::blue));
-        inf->setPen(QPen(Qt::red));
 
         for(int i = 0; i < plotSize; ++i) {
-            m_arrx[i] = (ratioType)i*DT;
-            m_arry[i] = 0.0;
+            m_xarray[i] = (ratioType)i*DT;
         }
 
-        inf->setRawData(m_arrx, m_arry, m_plotSize);
+        // initialize all pointers to NULL
+        for(int i = 0; i < CS_MAX_STATS; ++i) {
+            m_yarrayList.append(NULL);
+        }
 
-        sus->attach(ui->qwtPlot);
-        inf->attach(ui->qwtPlot);
+        QwtPlot *plot = ui->qwtPlot;
 
         // disable caching
-        ui->qwtPlot->canvas()->setPaintAttribute(QwtPlotCanvas::PaintCached, false);
-        ui->qwtPlot->canvas()->setPaintAttribute(QwtPlotCanvas::PaintPacked, false);
+        plot->canvas()->setPaintAttribute(QwtPlotCanvas::PaintCached, false);
+        plot->canvas()->setPaintAttribute(QwtPlotCanvas::PaintPacked, false);
 
-        ui->qwtPlot->setAxisScale(QwtPlot::xBottom, 0, m_plotSize);
-        ui->qwtPlot->setAxisScale(QwtPlot::yLeft, 0, 1000000);
+        plot->setAxisScale(QwtPlot::xBottom, 0, m_plotSize);
+
+        plot->plotLayout()->setAlignCanvasToScales(true);
+
+        plot->setAxisScaleDraw(QwtPlot::yLeft, new AmountTypeScaleDraw());
 
 
-        this->connect(m_city, SIGNAL(infected(amountType)), SLOT(rcvInfected(amountType)));
-        //this->connect(m_city, SIGNAL(susceptible(amountType)), SLOT(rcvSusceptible(amountType)));
+        // whenever a step's finished, replot the curves
+        this->connect(m_city, SIGNAL(stepped()), SLOT(replot()));
+        this->connect(this, SIGNAL(destroyed()), SLOT(deleteCurveData()));
+
+        this->connect(m_city, SIGNAL(statUpdate(CityStats,amountType)),
+                      SLOT(cityStatUpdate(CityStats,amountType)));
 
     }
 
     MdiPlot::~MdiPlot()
     {
         delete ui;
-        delete[] m_arrx;
-        delete[] m_arry;
+        delete[] m_xarray;
     }
 
-    void MdiPlot::rcvInfected(amountType at) {
-        // shift data left
-        qDebug() << tr("%1 received %2").arg("rcvInfected();").arg(at);
-        for(int i = 0 ; i < m_plotSize-1; ++i) {
-            m_arry[i] = m_arry[i+1];
-            //qDebug() << tr("%1: at i: %2").arg("rcvInfected();").arg(m_arry[i]);
+    void MdiPlot::deleteCurveData() {
+        for(int i = 0; i < CS_MAX_STATS; ++i) {
+            delete[] m_yarrayList[(CityStats)i];
+        }
+    }
+
+    void MdiPlot::cityStatUpdate(CityStats cs, amountType at) {
+        // TODO: only change scale if the value of the stat has changed
+        if(cs == m_scaleBy) {
+            ui->qwtPlot->setAxisScale(QwtPlot::yLeft, 0, at);
         }
 
-        m_arry[m_plotSize-1] = (double)at;
-        //ui->qwtPlot->replot();
+        /* do we have an array for the specified stat? If we do, then we're following
+           it */
+        if(m_yarrayList[cs] == NULL)
+            return;
+        qDebug() << tr("%1: received update for %2 (%3)").arg("cityStatUpdate()")
+                .arg(cs).arg(at);
+        double *yarr = m_yarrayList[cs];
+        // shift data in array left
+        for(int i = 0; i < m_plotSize-1; ++i) {
+            yarr[i] = yarr[i+1];
+        }
+        yarr[m_plotSize-1] = (double)at;
+
     }
 
-    void MdiPlot::rcvSusceptible(amountType at) {
-        // TODO
-        //ui->qwtPlot->replot();
+    void MdiPlot::changeYScale(CityStats cs) {
+        m_scaleBy = cs;
     }
+
+    void MdiPlot::followStatistic(CityStats cs) {
+        if(m_yarrayList[cs] != NULL) {
+            qDebug() << tr("%1: already following cs %2").arg("followStatistic()").arg(cs);
+            return;
+        }
+        qDebug() << tr("%1: following cs %2").arg("followStatistic()").arg(cs);
+        // create a new double[] for the data we want to follow
+        m_yarrayList[cs] = new double[m_plotSize];
+
+        // zero the data
+        for(int i = 0; i < m_plotSize; ++i) {
+            m_yarrayList[cs][i] = 0;
+        }
+        QwtPlotCurve *qcur = new QwtPlotCurve(STATNAMES[cs]);
+
+        qcur->setRawData(m_xarray, m_yarrayList[cs], m_plotSize);
+
+        // unique colors for the first NUMCOLORS curves
+        qcur->setPen(QPen(PENCOLORS[m_numCurves % NUMCOLORS]));
+        qcur->attach(ui->qwtPlot);
+    }
+
+    void MdiPlot::replot() {
+        ui->qwtPlot->replot();
+    }
+
+//    void MdiPlot::rcvInfected(amountType at) {
+//        // shift data left
+//        qDebug() << tr("%1 received %2").arg("rcvInfected();").arg(at);
+//        for(int i = 0 ; i < m_plotSize-1; ++i) {
+//            m_arry[i] = m_arry[i+1];
+//            //qDebug() << tr("%1: at i: %2").arg("rcvInfected();").arg(m_arry[i]);
+//        }
+
+//        m_arry[m_plotSize-1] = (double)at;
+//        //ui->qwtPlot->replot();
+//    }
+
 
     void MdiPlot::changeEvent(QEvent *e)
     {

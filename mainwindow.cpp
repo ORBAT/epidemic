@@ -6,6 +6,7 @@
 #include "pathogen.h"
 #include "mdiplot.h"
 
+
 namespace QtEpidemy {
 
     MainWindow::MainWindow(QWidget *parent) :
@@ -22,7 +23,7 @@ namespace QtEpidemy {
         p->setStatistic(PS_SURVIVAL, 0.9);
 
         MdiPlot *mp = new MdiPlot(c, 20);
-
+        mp->followStatistic(CS_INFECTED);
         ui->centralWidget->addSubWindow(mp);
         QTimer *timer = new QTimer(this);
         connect(timer, SIGNAL(timeout()), c, SLOT(step()));

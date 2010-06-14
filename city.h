@@ -50,6 +50,7 @@ namespace QtEpidemy {
         void population(amountType);
 
         void statUpdate(CityStats, amountType);
+        void statChanged(CityStats);
 
         void stepped();
 
@@ -153,7 +154,7 @@ namespace QtEpidemy {
             if(val != m_dailyInfectedDeaths) {
 
                 m_dailyInfectedDeaths = val;
-                emit dailyInfectedDeaths(m_dailyInfectedDeaths);
+                emit statChanged(CS_D_INF_DEATHS);
             }
 
         }
@@ -169,7 +170,7 @@ namespace QtEpidemy {
             if(val != m_dailyQuarantinedDeaths) {
 
                 m_dailyQuarantinedDeaths = val;
-                emit dailyQuarantinedDeaths(m_dailyQuarantinedDeaths);
+                emit statChanged(CS_D_QUAR_DEATHS);
             }
         }
 
@@ -185,7 +186,7 @@ namespace QtEpidemy {
             if(val != m_dailyInfectedRecoveries) {
 
                 m_dailyInfectedRecoveries = val;
-                emit dailyInfectedRecoveries(m_dailyInfectedRecoveries);
+                emit statChanged(CS_D_INF_RECOVER);
             }
         }
 
@@ -199,7 +200,7 @@ namespace QtEpidemy {
             if(val != m_dailyQuarantinedRecoveries) {
 
                 m_dailyQuarantinedRecoveries = val;
-                emit dailyQuarantinedRecoveries(m_dailyQuarantinedRecoveries);
+                emit statChanged(CS_D_QUAR_RECOVER);
             }
         }
 
@@ -216,7 +217,7 @@ namespace QtEpidemy {
             if(val != m_dailyInfections) {
 
                 m_dailyInfections = val;
-                emit dailyInfections(m_dailyInfections);
+                emit statChanged(CS_D_INFECTIONS);
             }
 
         }
@@ -231,7 +232,7 @@ namespace QtEpidemy {
             if(val != m_dailyQuarantines) {
 
                 m_dailyQuarantines = val;
-                emit dailyQuarantines(m_dailyQuarantines);
+                emit statChanged(CS_D_QUARANTINES);
             }
         }
 
@@ -245,7 +246,7 @@ namespace QtEpidemy {
 
                 qDebug() << tr("%2 new %1").arg(m_susceptible).arg("calcSusceptible();");
 
-                emit susceptible(m_susceptible);
+                emit statChanged(CS_SUSCEPTIBLE);
             }
 
 
@@ -259,10 +260,11 @@ namespace QtEpidemy {
                               m_dailyQuarantines -
                               m_dailyInfectedDeaths) * DT;
             clampToZero(val);
+
             qDebug() << tr("%3 new %1, old %2").arg(val).arg(m_infected).arg("calcInfected();");
             if(val != m_infected) {
                 m_infected = val;
-                emit infected(m_infected);
+                emit statChanged(CS_INFECTED);
             }
         }
 
@@ -280,7 +282,7 @@ namespace QtEpidemy {
 
             if(val != m_recovered) {
                 m_recovered = val;
-                emit recovered(m_recovered);
+                emit statChanged(CS_RECOVERED);
             }
 
         }
@@ -295,7 +297,7 @@ namespace QtEpidemy {
 
             if(val != m_dead) {
                 m_dead = val;
-                emit dead(m_dead);
+                emit statChanged(CS_DEAD);
             }
 
         }
@@ -310,7 +312,7 @@ namespace QtEpidemy {
             if(val != m_quarantined) {
 
                 m_quarantined = val;
-                emit quarantined(m_quarantined);
+                emit statChanged(CS_QUARANTINED);
             }
         }
 
@@ -321,7 +323,7 @@ namespace QtEpidemy {
             qDebug() << tr("%3 new %1, old %2").arg(val).arg(m_population).arg("calcPopulation();");
             if(val  != m_population) {
                 m_population = val ;
-                emit population(m_population);
+                emit statChanged(CS_POPULATION);
             }
         }
 
