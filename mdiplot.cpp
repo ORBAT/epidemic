@@ -24,7 +24,7 @@ namespace QtEpidemy {
         ui->setupUi(this);
 
         for(int i = 0; i < plotSize; ++i) {
-            m_xarray[i] = (ratioType)i*DT;
+            m_xarray[i] = i;
         }
 
         // initialize all pointers to NULL
@@ -104,7 +104,7 @@ namespace QtEpidemy {
         for(int i = 0; i < m_plotSize; ++i) {
             m_yarrayList[cs][i] = 0;
         }
-        QwtPlotCurve *qcur = new QwtPlotCurve(STATNAMES[cs]);
+        QwtPlotCurve *qcur = new QwtPlotCurve(CS_NAMES[cs]);
 
         qcur->setRawData(m_xarray, m_yarrayList[cs], m_plotSize);
 

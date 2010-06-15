@@ -11,7 +11,7 @@ namespace QtEpidemy {
 
     MainWindow::MainWindow(QWidget *parent) :
             QMainWindow(parent),
-            c(new City(tr("Derperton"), 1000000, this)),
+            c(new City(tr("Derperton"), 998, this)),
             p(new Pathogen(1,0,1,this)),
             ui(new Ui::MainWindow)
     {
@@ -28,9 +28,12 @@ namespace QtEpidemy {
         QTimer *timer = new QTimer(this);
         connect(timer, SIGNAL(timeout()), c, SLOT(step()));
         c->addInfected(1);
-        //timer->start(900);
-        c->step();
-        c->step();
+//        timer->start(900);
+        for(int i = 0; i < 48; ++i) {
+            c->step();
+            DPR(tr("step %1").arg(i));
+            qDebug() << "\n\n";
+        }
     }
 
 

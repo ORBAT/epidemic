@@ -20,7 +20,7 @@ namespace QtEpidemy {
 
     void Pathogen::setStatistic(PathogenStats ps, ratioType rt) {
         qDebug() << "Pathogen::setStatistic() ps" << ps << "rt" << rt;
-        clampToZero(rt);
+        clampToZero<ratioType>(rt);
         QWriteLocker locker(&lock);
         m_stats[ps] = rt;
         emit statChanged(ps, rt);

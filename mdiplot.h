@@ -32,6 +32,7 @@ namespace QtEpidemy {
     public:
         DateScaleDraw(const QDateTime &start) : m_start(start) {}
 
+
         virtual QwtText label(double v) const {
             qDebug() << Q_FUNC_INFO << "called for" << v << "ticks";
             /*
@@ -43,6 +44,10 @@ namespace QtEpidemy {
 
              Since DT is (currently, anyhow) < 24h, it's best to convert v * DT to
              seconds. */
+            /**
+              FIXME:
+              This will roll over when v reaches 596523
+              */
             int secondsElapsed = (v * DT) * 86400; // 24h * 60min * 60sec
             QDateTime derp = m_start.addSecs(secondsElapsed);
             return derp.toString("yy-M-dd hh");
@@ -82,7 +87,7 @@ namespace QtEpidemy {
         void followStatistic(CityStats);
         void replot();
 
-    protected:
+    protected slots:
         void deleteCurveData();  // deletes all curve data from m_yarrayList
 
 

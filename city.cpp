@@ -8,28 +8,29 @@ namespace QtEpidemy {
             QObject(parent),
             m_pathogen(NULL),   // no pathogens when we start out
             m_name(name),
-            m_bonusDuration(0),
-            m_bonusInfectionRate(0),
-            m_bonusSurvivalRate(0),
-            m_quarantineRate(0),
-            m_survivalRate(0),      // from the pathogen
-            m_infectionRate(0),     // ditto
-            m_diseaseDuration(0),   // same here
-            m_dailyInfectedDeaths(0),
-            m_dailyQuarantinedDeaths(0),
-            m_dailyInfectedRecoveries(0),
-            m_dailyQuarantinedRecoveries(0),
-            m_dailyInfections(0),
-            m_dailyQuarantines(0),
-            m_susceptible(population),
-            m_population(population),
-            m_infected(0),
-            m_recovered(0),
-            m_dead(0),
-            m_quarantined(0),
+            m_bonusDuration(0.0),
+            m_bonusInfectionRate(0.0),
+            m_bonusSurvivalRate(0.0),
+            m_quarantineRate(0.0),
+            m_survivalRate(0.0),      // from the pathogen
+            m_infectionRate(0.0),     // ditto
+            m_diseaseDuration(0.0),   // same here
+            m_dailyInfectedDeaths(0.0),
+            m_dailyQuarantinedDeaths(0.0),
+            m_dailyInfectedRecoveries(0.0),
+            m_dailyQuarantinedRecoveries(0.0),
+            m_dailyInfections(0.0),
+            m_dailyQuarantines(0.0),
+            m_susceptible((ratioType)population),
+            m_population((ratioType)population),
+            m_infected(0.0),
+            m_recovered(0.0),
+            m_dead(0.0),
+            m_quarantined(0.0),
             m_memberPointers((int)CS_MAX_STATS)
     {
-        qDebug() << tr("City() %1 constructed with population %2").arg(name).arg(population);
+        //qDebug() << tr("City() %1 constructed with population %2").arg(name).arg(population);
+        DPR(tr("%1 constructed with population %2").arg(name).arg(population));
 
         // zero the array
         for(int i = 0; i < CS_MAX_STATS; ++i) {
@@ -60,13 +61,21 @@ namespace QtEpidemy {
 
     void City::step() {
 
-        qDebug("City::step()");
-        /*
-         These calculations are done in this order to prevent people who get infected
-         from getting quarantined or dying during the same step
-        */
+        DPR("start step");
 
-        // calculate daily amounts at the start of each step
+        /* calculations of statistics should be done so that total statistics are calculated
+           first and daily statistics last */
+        calcDead();
+
+        calcQuarantined();
+
+        calcSusceptible();
+
+        calcInfected();
+
+        calcPopulation();
+
+
         calcDailyInfectedDeaths();
 
         calcDailyQuarantinedDeaths();
@@ -79,20 +88,6 @@ namespace QtEpidemy {
 
         calcDailyQuarantines();
 
-
-        // then kill off some infected
-        calcDead();
-
-        // then a little quarantining
-        calcQuarantined();
-
-        // next the new values of susceptible/infected (order doesn't matter)
-        calcSusceptible();
-
-        calcInfected();
-
-        calcPopulation();
-
         for(int i = 0; i < CS_MAX_STATS; ++i) { // emit all stats
             emitStat((CityStats)i);
         }
@@ -102,7 +97,8 @@ namespace QtEpidemy {
 
     void City::setPathogen(Pathogen *pp) {
         {
-            qDebug() << "City" << m_name <<  "City::setPathogen()" << pp;
+
+            DPR(tr("City name %1, pathogen %2").arg(m_name).arg((quint32)pp));
 
             if(m_pathogen != NULL) {
                 // disconnect us from all of the previous pathogen's signals
@@ -129,39 +125,36 @@ namespace QtEpidemy {
             m_bonusDuration = rt;
             break;
         default:
-            qDebug() << "City" << m_name << "changeBonus() got strange PathogenStats value" << pst;
+            DPR(tr("City %2 got strange ps value %1").arg(pst).arg(m_name));
         }
     }
 
 
 
     void City::emitStat(CityStats cs) {
-        qDebug() << tr("%1 emitting cs %2 (%3)").arg("City::emitStat();").arg(cs).arg((amountType)*m_memberPointers[cs]);
+//        DPR(tr("%1 emitting %2 (%3)").arg(m_name).arg(CS_NAMES[cs]).arg((amountType)*m_memberPointers[cs]));
         emit statUpdate(cs, *m_memberPointers[cs]);
     }
 
     void City::pathogenStatChanged(PathogenStats ps, ratioType rt) {
-
+        DPR(tr("%1 stat %2 (%3)").arg(m_name).arg(PS_NAMES[ps]).arg(rt));
         switch(ps) {
         case PS_DURATION:
-            qDebug() << "City" << m_name <<  "City::pathogenStatChanged() PS_DURATION"<<rt;
             m_diseaseDuration = rt;
             break;
         case PS_INFECTION:
-            qDebug() << "City" << m_name <<  "City::pathogenStatChanged() PS_INFECTION"<<rt;
             m_infectionRate = rt;
             break;
         case PS_SURVIVAL:
-            qDebug() << "City" << m_name <<  "City::pathogenStatChanged() PS_SURVIVAL"<<rt;
             m_survivalRate = rt;
             break;
         default:
-            qDebug() << "City" << m_name <<  "City::pathogenStatChanged() got weird ps" << ps << "value"<<rt;
+            DPR(tr("City %1 got weird ps %2 (%3)").arg(m_name).arg(ps).arg(rt));
         }
     }
 
     void City::addInfected(amountType at) {
-        m_infected += at;
+        m_infected += (ratioType)at;
     }
 
 
