@@ -66,31 +66,24 @@ namespace QtEpidemy {
         /* calculations of statistics should be done so that total statistics are calculated
            first and daily statistics last */
         calcDead();
-
         calcQuarantined();
-
         calcSusceptible();
-
         calcInfected();
-
+        calcRecovered();
         calcPopulation();
 
-
         calcDailyInfectedDeaths();
-
         calcDailyQuarantinedDeaths();
-
         calcDailyInfectedRecoveries();
-
         calcDailyQuarantinedRecoveries();
-
         calcDailyInfections();
-
         calcDailyQuarantines();
 
         for(int i = 0; i < CS_MAX_STATS; ++i) { // emit all stats
             emitStat((CityStats)i);
         }
+
+        CDPR("SUM OF QUAR+SUS+INF+RECOV");
 
         emit stepped(); /* so that plots know when they need to redraw their data */
     }

@@ -186,6 +186,7 @@ namespace QtEpidemy {
                 val = calcDailyDeathsForGroup(m_quarantined);
             }
 
+            emitChangeSigIfDiff(val, m_dailyQuarantinedDeaths, CS_D_QUAR_DEATHS);
 //            if(val != m_dailyQuarantinedDeaths) {
 //                m_dailyQuarantinedDeaths = val;
 //                emit statChanged(CS_D_QUAR_DEATHS);
@@ -241,7 +242,7 @@ namespace QtEpidemy {
         inline void calcDailyQuarantines() {
             ratioType val = 0;
 
-            if((m_quarantineRate) != 0 && m_infected != 0) {
+            if(m_quarantineRate != 0 && m_infected != 0) {
                 val = m_infected * m_quarantineRate;
             }
 
@@ -287,7 +288,7 @@ namespace QtEpidemy {
         inline void calcRecovered() {
             ratioType val = 0;
 
-            if(m_dailyInfectedRecoveries != 0 &&
+            if(m_dailyInfectedRecoveries != 0 ||
                m_dailyQuarantinedRecoveries != 0) {
 
                 val = m_recovered + ((m_dailyInfectedRecoveries +
