@@ -13,7 +13,7 @@ namespace QtEpidemy {
     typedef double ratioType;
     typedef qint32 amountType;
 
-    const static ratioType DT = 1.0/*/24.0*/;  // how many DAYS elapse between steps. 1/24 = 1h
+    const static ratioType DT = 1.0/24.0;  // how many DAYS elapse between steps. 1/24 = 1h
 
     inline void debugPr(const char* func, QString stuff) {
         qDebug() << func << "\n\t" << stuff;

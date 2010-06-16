@@ -15,6 +15,7 @@ namespace QtEpidemy {
             m_xarray(new double[plotSize]),
             m_scaleBy(CS_POPULATION),
             m_numCurves(0),
+            m_numDataPoints(0),
             ui(new Ui::MdiPlot)
     {
 
@@ -23,13 +24,14 @@ namespace QtEpidemy {
         ::QwtPainter::setDeviceClipping(false); // disable polygon clipping
         ui->setupUi(this);
 
-        for(int i = 0; i < plotSize; ++i) {
-            m_xarray[i] = i;
+        for(int i = 0; i < m_plotSize; ++i) {
+            m_xarray[m_plotSize - 1 - i] = i;
         }
 
-        // initialize all pointers to NULL
+        /* there are at most CS_MAX_STATS stats a City can send */
         for(int i = 0; i < CS_MAX_STATS; ++i) {
             m_yarrayList.append(NULL);
+            m_pcList.append(NULL);
         }
 
         QwtPlot *plot = ui->qwtPlot;
@@ -39,6 +41,8 @@ namespace QtEpidemy {
         plot->canvas()->setPaintAttribute(QwtPlotCanvas::PaintPacked, false);
 
         plot->setAxisScale(QwtPlot::xBottom, 0, m_plotSize);
+        plot->setAxisLabelRotation(QwtPlot::xBottom, -50.0);
+        plot->setAxisLabelAlignment(QwtPlot::xBottom, Qt::AlignLeft | Qt::AlignBottom);
 
         plot->plotLayout()->setAlignCanvasToScales(true);
 
@@ -47,7 +51,7 @@ namespace QtEpidemy {
 
         // whenever a step's finished, replot the curves
         this->connect(m_city, SIGNAL(stepped()), SLOT(replot()));
-        this->connect(this, SIGNAL(destroyed()), SLOT(deleteCurveData()));
+//        this->connect(this, SIGNAL(destroyed()), SLOT(deleteCurveData()));
 
         this->connect(m_city, SIGNAL(statUpdate(CityStats,amountType)),
                       SLOT(cityStatUpdate(CityStats,amountType)));
@@ -56,13 +60,12 @@ namespace QtEpidemy {
 
     MdiPlot::~MdiPlot()
     {
-        delete ui;
-        delete[] m_xarray;
+//        delete[] m_xarray;
     }
 
     void MdiPlot::deleteCurveData() {
         for(int i = 0; i < CS_MAX_STATS; ++i) {
-            delete[] m_yarrayList[(CityStats)i];
+            delete[] m_yarrayList[i];
         }
     }
 
@@ -72,18 +75,23 @@ namespace QtEpidemy {
             ui->qwtPlot->setAxisScale(QwtPlot::yLeft, 0, at);
         }
 
+        if(m_numDataPoints < m_plotSize)
+            m_numDataPoints++;
+
         /* do we have an array for the specified stat? If we do, then we're following
            it */
         if(m_yarrayList[cs] == NULL)
             return;
+
+
         qDebug() << tr("%1: received update for %2 (%3)").arg("cityStatUpdate()")
                 .arg(cs).arg(at);
         double *yarr = m_yarrayList[cs];
         // shift data in array left
-        for(int i = 0; i < m_plotSize-1; ++i) {
-            yarr[i] = yarr[i+1];
+        for(int i = m_numDataPoints; i > 0; --i) {
+            yarr[i] = yarr[i-1];
         }
-        yarr[m_plotSize-1] = (double)at;
+        yarr[0] = (double)at;
 
     }
 
@@ -106,28 +114,33 @@ namespace QtEpidemy {
         }
         QwtPlotCurve *qcur = new QwtPlotCurve(CS_NAMES[cs]);
 
-        qcur->setRawData(m_xarray, m_yarrayList[cs], m_plotSize);
-
         // unique colors for the first NUMCOLORS curves
         qcur->setPen(QPen(PENCOLORS[m_numCurves % NUMCOLORS]));
         qcur->attach(ui->qwtPlot);
+        m_pcList[cs] = qcur;
+        m_numCurves++;
     }
 
     void MdiPlot::replot() {
+
+        // "shift" the X axis to the left
+        for(int i = 0; i < m_plotSize; ++i) {
+            m_xarray[i]++;
+        }
+
+        for(int i = 0; i < CS_MAX_STATS; ++i) {
+            if(m_pcList.at(i) != NULL)
+                m_pcList[i]->setRawData(m_xarray, m_yarrayList.at(i), m_numDataPoints);
+        }
+
         ui->qwtPlot->replot();
+
+        // rescale the X axis to fit the new
+        ui->qwtPlot->setAxisScale(QwtPlot::xBottom,
+                                  m_xarray[m_plotSize-1], m_xarray[0]);
+
+
     }
-
-//    void MdiPlot::rcvInfected(amountType at) {
-//        // shift data left
-//        qDebug() << tr("%1 received %2").arg("rcvInfected();").arg(at);
-//        for(int i = 0 ; i < m_plotSize-1; ++i) {
-//            m_arry[i] = m_arry[i+1];
-//            //qDebug() << tr("%1: at i: %2").arg("rcvInfected();").arg(m_arry[i]);
-//        }
-
-//        m_arry[m_plotSize-1] = (double)at;
-//        //ui->qwtPlot->replot();
-//    }
 
 
     void MdiPlot::changeEvent(QEvent *e)

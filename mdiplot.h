@@ -74,9 +74,15 @@ namespace QtEpidemy {
         City *m_city;
         int m_plotSize;
         double *m_xarray; // the data for the x-axis
-        QList<double*> m_yarrayList;
+        QList<double*> m_yarrayList; // contains all the arrays used for the Y-axis data
+        QList<QwtPlotCurve*> m_pcList; // all the QwtPlotCurves currently in the QwtPlot
+
         CityStats m_scaleBy; // scale y-axis by this City stat. CS_POPULATION by default
+        /* how many curves there are on the current plot. Basically the same as the number
+           of non-null elements in m_yarrayList or m_pcList */
         quint8 m_numCurves;
+
+        quint32 m_numDataPoints; // how many data points have been collected so far
 
 
     public slots:

@@ -83,7 +83,8 @@ namespace QtEpidemy {
             emitStat((CityStats)i);
         }
 
-        CDPR("SUM OF QUAR+SUS+INF+RECOV");
+        CDPR(tr("Sum of alive+dead people (should be the same as original pop) %1")
+             .arg(m_susceptible+m_infected+m_recovered+m_dead+m_quarantined));
 
         emit stepped(); /* so that plots know when they need to redraw their data */
     }

@@ -28,12 +28,12 @@ namespace QtEpidemy {
         QTimer *timer = new QTimer(this);
         connect(timer, SIGNAL(timeout()), c, SLOT(step()));
         c->addInfected(1);
-//        timer->start(900);
-        for(int i = 0; i < 48; ++i) {
-            c->step();
-            DPR(tr("step %1").arg(i));
-            qDebug() << "\n\n";
-        }
+        timer->start(450);
+//        for(int i = 0; i < 48; ++i) {
+//            c->step();
+//            DPR(tr("step %1").arg(i));
+//            qDebug() << "\n\n";
+//        }
     }
 
 

@@ -154,7 +154,7 @@ namespace QtEpidemy {
 
         /* if the new value is different from the old value, change the old value and
            emit the statChanged signal */
-        inline void emitChangeSigIfDiff(const ratioType &newVal, ratioType &orig,
+        inline void emitAndChangeIfDiff(const ratioType &newVal, ratioType &orig,
                                         const CityStats &cs) {
             if(newVal != orig) {
                 orig = newVal;
@@ -171,7 +171,7 @@ namespace QtEpidemy {
 
             CDPR_STAT(val, m_dailyInfectedDeaths);
 
-            emitChangeSigIfDiff(val, m_dailyInfectedDeaths, CS_D_INF_DEATHS);
+            emitAndChangeIfDiff(val, m_dailyInfectedDeaths, CS_D_INF_DEATHS);
 //            if(val != m_dailyInfectedDeaths) {
 //                m_dailyInfectedDeaths = val;
 //                emit statChanged(CS_D_INF_DEATHS);
@@ -186,7 +186,7 @@ namespace QtEpidemy {
                 val = calcDailyDeathsForGroup(m_quarantined);
             }
 
-            emitChangeSigIfDiff(val, m_dailyQuarantinedDeaths, CS_D_QUAR_DEATHS);
+            emitAndChangeIfDiff(val, m_dailyQuarantinedDeaths, CS_D_QUAR_DEATHS);
 //            if(val != m_dailyQuarantinedDeaths) {
 //                m_dailyQuarantinedDeaths = val;
 //                emit statChanged(CS_D_QUAR_DEATHS);
@@ -244,25 +244,22 @@ namespace QtEpidemy {
 
             if(m_quarantineRate != 0 && m_infected != 0) {
                 val = m_infected * m_quarantineRate;
+                CDPR_STAT(val, m_dailyQuarantines);
             }
 
-            if(val != m_dailyQuarantines) {
-                m_dailyQuarantines = val;
-                emit statChanged(CS_D_QUARANTINES);
-            }
+            emitAndChangeIfDiff(val,m_dailyQuarantines,CS_D_QUARANTINES);
         }
 
+        /* people are susceptible if they're not infected */
         inline void calcSusceptible() {
 
             if(m_dailyInfections != 0) {
-                /* people are susceptible if they're not infected */
-                CDPR(tr("OLD susc %1, d_infs %2 (dt %3) ").arg(m_susceptible).arg(m_dailyInfections).arg(DT));
+
                 m_susceptible = m_susceptible -
                                 (m_dailyInfections * DT);
-                CDPR(tr("NEW susc %1, d_infs %2 (dt %3) ").arg(m_susceptible).arg(m_dailyInfections).arg(DT));
+
                 clampToZero<ratioType>(m_susceptible);
-
-
+                CDPR(QString::number(m_susceptible));
                 emit statChanged(CS_SUSCEPTIBLE);
             }
 
@@ -272,17 +269,14 @@ namespace QtEpidemy {
         inline void calcInfected() {
 
             ratioType val = m_infected +
-                             ((m_dailyInfections -
+                            ((m_dailyInfections -
                               m_dailyInfectedRecoveries -
                               m_dailyQuarantines -
                               m_dailyInfectedDeaths) * DT);
 
             CDPR_STAT(val,m_infected);
             clampToZero<ratioType>(val);
-            if(val != m_infected) {
-                m_infected = val;
-                emit statChanged(CS_INFECTED);
-            }
+            emitAndChangeIfDiff(val,m_infected,CS_INFECTED);
         }
 
         inline void calcRecovered() {
@@ -292,15 +286,11 @@ namespace QtEpidemy {
                m_dailyQuarantinedRecoveries != 0) {
 
                 val = m_recovered + ((m_dailyInfectedRecoveries +
-                                     m_dailyQuarantinedRecoveries) * DT);
-                CDPR_STAT(val,m_recovered);
-            }
+                                      m_dailyQuarantinedRecoveries) * DT);
 
-            if(val != m_recovered) {
-                m_recovered = val;
-                emit statChanged(CS_RECOVERED);
             }
-
+            CDPR_STAT(val,m_recovered);
+            emitAndChangeIfDiff(val,m_recovered, CS_INFECTED);
         }
 
         inline void calcDead() {
@@ -308,27 +298,23 @@ namespace QtEpidemy {
             if(m_dailyInfectedDeaths != 0 || m_dailyQuarantinedDeaths != 0) {
                 val = m_dead + (m_dailyInfectedDeaths +
                                 m_dailyQuarantinedDeaths) * DT;
-                CDPR_STAT(val,m_dead);
             }
-
-            if(val != m_dead) {
-                m_dead = val;
-                emit statChanged(CS_DEAD);
-            }
+            CDPR_STAT(val,m_dead);
+            emitAndChangeIfDiff(val, m_dead, CS_DEAD);
 
         }
 
         inline void calcQuarantined() {
 
             ratioType val =m_quarantined + (m_dailyQuarantines -
-                                                        m_dailyQuarantinedDeaths-
-                                                        m_dailyQuarantinedRecoveries)
-                    * DT;
+                                            m_dailyQuarantinedDeaths -
+                                            m_dailyQuarantinedRecoveries)
+                                         * DT;
+            CDPR_STAT(val,m_quarantined);
+
             clampToZero<ratioType>(val);
-            if(val != m_quarantined) {
-                m_quarantined = val;
-                emit statChanged(CS_QUARANTINED);
-            }
+
+            emitAndChangeIfDiff(val,m_quarantined,CS_QUARANTINED);
         }
 
         inline void calcPopulation() {
@@ -336,10 +322,7 @@ namespace QtEpidemy {
             ratioType val = m_susceptible + m_infected + m_recovered +
                              m_quarantined;
             CDPR_STAT(val,m_population);
-            if(val  != m_population) {
-                m_population = val ;
-                emit statChanged(CS_POPULATION);
-            }
+            emitAndChangeIfDiff(val, m_population, CS_POPULATION);
         }
 
 
