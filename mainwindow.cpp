@@ -28,15 +28,15 @@ namespace QtEpidemy {
         mp->showStatistic(CS_DEAD);
         ui->centralWidget->addSubWindow(mp);
         QTimer *timer = new QTimer(this);
-        QTimer *remover = new QTimer(this);
-        remover->setSingleShot(true);
+//        QTimer *remover = new QTimer(this);
+//        remover->setSingleShot(true);
 
         connect(timer, SIGNAL(timeout()), c, SLOT(step()));
-        connect(remover, SIGNAL(timeout()), mp, SLOT(hideStatistic()));
+//        connect(remover, SIGNAL(timeout()), mp, SLOT(hideStatistic()));
 
         c->addInfected(1);
         timer->start(450);
-        remover->start(2000);
+//        remover->start(2000);
 
     }
 

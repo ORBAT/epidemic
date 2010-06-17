@@ -21,17 +21,37 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QwtPlot" name="qwtPlot">
-     <property name="propertiesDocument" stdset="0">
-      <string notr="true"/>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
      </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QwtThermo" name="Thermo">
-     <property name="scalePosition">
-      <enum>QwtThermo::RightScale</enum>
-     </property>
+     <widget class="QWidget" name="graphTab">
+      <attribute name="title">
+       <string>Plot</string>
+      </attribute>
+      <layout class="QGridLayout" name="graphGridLayout">
+       <item row="0" column="0">
+        <widget class="QwtPlot" name="qwtPlot">
+         <property name="propertiesDocument" stdset="0">
+          <string notr="true"/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QwtThermo" name="qwtThermo">
+         <property name="scalePosition">
+          <enum>QwtThermo::RightScale</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="settingsTab">
+      <attribute name="title">
+       <string>Settings</string>
+      </attribute>
+      <layout class="QGridLayout" name="settingsGridLayout"/>
+     </widget>
     </widget>
    </item>
   </layout>

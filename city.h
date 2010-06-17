@@ -250,7 +250,6 @@ namespace QtEpidemy {
             emitAndChangeIfDiff(val,m_dailyQuarantines,CS_D_QUARANTINES);
         }
 
-        /* people are susceptible if they're not infected */
         inline void calcSusceptible() {
 
             if(m_dailyInfections != 0) {
@@ -336,13 +335,13 @@ namespace QtEpidemy {
 
         void setPathogen(Pathogen*);
 
-        void pathogenStatChanged(PathogenStats, ratioType);
+        void pathogenStatChanged(const PathogenStats&, const ratioType&);
 
-        void setBonus(PathogenStats, ratioType);
+        void setBonus(const PathogenStats&, const ratioType&);
 
-        void addInfected(amountType);
+        void addInfected(const amountType&);
 
-        void emitStat(CityStats);                    // forces an emit of a statistic
+        void emitStat(const CityStats&);                    // forces an emit of a statistic
 
 
     };

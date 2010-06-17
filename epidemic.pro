@@ -19,13 +19,17 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     city.cpp \
     pathogen.cpp \
-    mdiplot.cpp
+    mdiplot.cpp \
+    citycontroller.cpp \
+    mdisettingscontroller.cpp
 
 HEADERS  += mainwindow.h \
     city.h \
     pathogen.h \
     constants.h \
-    mdiplot.h
+    mdiplot.h \
+    citycontroller.h \
+    mdisettingscontroller.h
 
 FORMS    += mainwindow.ui \
     mdiplot.ui

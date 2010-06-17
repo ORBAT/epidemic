@@ -106,7 +106,7 @@ namespace QtEpidemy {
 
     }
 
-    void City::setBonus(PathogenStats pst, ratioType rt) {
+    void City::setBonus(const PathogenStats &pst, const ratioType &rt) {
 
         switch(pst) {
         case PS_SURVIVAL:
@@ -125,12 +125,12 @@ namespace QtEpidemy {
 
 
 
-    void City::emitStat(CityStats cs) {
-//        DPR(tr("%1 emitting %2 (%3)").arg(m_name).arg(CS_NAMES[cs]).arg((amountType)*m_memberPointers[cs]));
+    void City::emitStat(const CityStats &cs) {
+        CDPR(tr("Forced emit of %1").arg(CS_NAMES[cs]));
         emit statUpdate(cs, *m_memberPointers[cs]);
     }
 
-    void City::pathogenStatChanged(PathogenStats ps, ratioType rt) {
+    void City::pathogenStatChanged(const PathogenStats &ps, const ratioType &rt) {
         DPR(tr("%1 stat %2 (%3)").arg(m_name).arg(PS_NAMES[ps]).arg(rt));
         switch(ps) {
         case PS_DURATION:
@@ -147,7 +147,7 @@ namespace QtEpidemy {
         }
     }
 
-    void City::addInfected(amountType at) {
+    void City::addInfected(const amountType &at) {
         m_infected += (ratioType)at;
     }
 

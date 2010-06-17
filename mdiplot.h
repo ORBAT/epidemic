@@ -19,10 +19,11 @@ class QwtPlotCurve;
 
 namespace QtEpidemy {
 
+    class MdiSettingsController;
 
     class AmountTypeScaleDraw : public QwtScaleDraw {
     public:
-        virtual QwtText label(double v) const {
+        virtual QwtText label(const double &v) const {
             // return a decimal number without the goddamn E notation
             return QString::number(v,'f',0);
         }
@@ -33,7 +34,7 @@ namespace QtEpidemy {
         DateScaleDraw(const QDateTime &start) : m_start(start) {}
 
 
-        virtual QwtText label(double v) const {
+        virtual QwtText label(const double &v) const {
             /*
              Time is measured in ticks in-game, and DT days elapse every tick (see
              constants.h for value). The value that gets passed to label(double) is
@@ -73,6 +74,10 @@ namespace QtEpidemy {
     protected:
         void changeEvent(QEvent *e);
         City *m_city;
+
+        /* populates the Settings tab with the necessary controllers and sends signals
+           when they change */
+        MdiSettingsController *m_settingsController;
         int m_plotSize;
 
         struct CurveData {
@@ -91,9 +96,9 @@ namespace QtEpidemy {
 
         /* how many curves there are on the current plot. Basically the same as the number
            of non-null elements in m_yarrayList or m_pcList */
-        quint8 m_numCurves;
+        qint8 m_numCurves;
 
-        quint32 m_numDataPoints; // how many data points have been collected so far
+        qint32 m_numDataPoints; // how many data points have been collected so far
 
 
     public slots:
@@ -106,7 +111,10 @@ namespace QtEpidemy {
         // shows the curve for the specified statistic
         void showStatistic(CityStats);
         // hides the curve for a statistic
-        void hideStatistic(CityStats cs = CS_INFECTED);
+        void hideStatistic(CityStats cs);
+
+        // calls either showStatistic() or hideStatistic() depending on the bool
+        void setStatVisibility(CityStats cs, bool);
 
         void replot();
 

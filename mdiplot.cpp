@@ -10,6 +10,7 @@
 #include "mdiplot.h"
 #include "ui_mdiplot.h"
 #include "city.h"
+#include "mdisettingscontroller.h"
 
 namespace QtEpidemy {
 
@@ -29,6 +30,8 @@ namespace QtEpidemy {
 
         ui->setupUi(this);
         m_qwtPlot = ui->qwtPlot;
+        m_settingsController = new MdiSettingsController(ui->settingsGridLayout, this);
+
 
         for(int i = 0; i < m_plotSize; ++i) {
 //            m_xAxisData[m_plotSize - 1 - i] = i;
@@ -90,7 +93,11 @@ namespace QtEpidemy {
 
     MdiPlot::~MdiPlot()
     {
-//        delete[] m_xarray;
+        delete[] m_xAxisData;
+        for(int i = 0; i < CS_MAX_STATS; ++i)
+            delete[] m_curveData[i].curvePoints;
+        delete ui;
+
     }
 
     void MdiPlot::cityStatUpdate(CityStats cs, amountType at) {
@@ -144,7 +151,7 @@ namespace QtEpidemy {
 
         m_curveData[cs].curve = qcur;
 
-        m_numCurves++;
+        ++m_numCurves;
     }
 
     void MdiPlot::hideStatistic(CityStats cs) {
@@ -157,6 +164,7 @@ namespace QtEpidemy {
             delete item;
             item = NULL;
         }
+        --m_numCurves;
     }
 
 
@@ -183,10 +191,13 @@ namespace QtEpidemy {
         }
 
         m_qwtPlot->replot();
+    }
 
-
-
-
+    void MdiPlot::setStatVisibility(CityStats cs, bool visible) {
+        if(visible)
+            showStatistic(cs);
+        else
+            hideStatistic(cs);
     }
 
 
