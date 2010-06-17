@@ -49,9 +49,13 @@ namespace QtEpidemy {
                                /*(char*)*/QT_TR_NOOP("CS_MAX_STATS")
                            };
 
-    const Qt::GlobalColor PENCOLORS[] = {Qt::red, Qt::green, Qt::blue, Qt::cyan, Qt::magenta,
-                                         Qt::darkYellow};
-    const quint8 NUMCOLORS = 6;
+    const Qt::GlobalColor CURVE_PENCOLORS[] = {Qt::red, Qt::green, Qt::blue, Qt::cyan, Qt::magenta,
+                                               Qt::darkYellow, Qt::black};
+
+    const Qt::PenStyle CURVE_PENSTYLES[] = {Qt::SolidLine, Qt::DashLine, Qt::DotLine,
+                                            Qt::DashDotDotLine};
+    const quint8 CURVE_NUMCOLORS = 6;
+    const quint8 CURVE_NUMSTYLES = 5;
 
     template<typename T>
     inline void clampToZero(T& val) {

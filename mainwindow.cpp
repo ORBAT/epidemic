@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QTimer>
+#include <QDateTime>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "city.h"
@@ -11,39 +12,36 @@ namespace QtEpidemy {
 
     MainWindow::MainWindow(QWidget *parent) :
             QMainWindow(parent),
-            c(new City(tr("Derperton"), 998, this)),
+            c(new City(tr("Derperton"), 10000, this)),
             p(new Pathogen(1,0,1,this)),
             ui(new Ui::MainWindow)
     {
         ui->setupUi(this);
-        this->connect(p, SIGNAL(statChanged(PathogenStats,ratioType)),SLOT(testSlot(PathogenStats,ratioType)));
         c->setPathogen(p);
         p->setStatistic(PS_DURATION, 5.0);
         p->setStatistic(PS_INFECTION, 0.002);
         p->setStatistic(PS_SURVIVAL, 0.9);
 
-        MdiPlot *mp = new MdiPlot(c, 20);
-        mp->followStatistic(CS_INFECTED);
+        MdiPlot *mp = new MdiPlot(c, 100, QDateTime::currentDateTime());
+        mp->showStatistic(CS_INFECTED);
+        mp->showStatistic(CS_SUSCEPTIBLE);
+        mp->showStatistic(CS_DEAD);
         ui->centralWidget->addSubWindow(mp);
         QTimer *timer = new QTimer(this);
+        QTimer *remover = new QTimer(this);
+        remover->setSingleShot(true);
+
         connect(timer, SIGNAL(timeout()), c, SLOT(step()));
+        connect(remover, SIGNAL(timeout()), mp, SLOT(hideStatistic()));
+
         c->addInfected(1);
         timer->start(450);
-//        for(int i = 0; i < 48; ++i) {
-//            c->step();
-//            DPR(tr("step %1").arg(i));
-//            qDebug() << "\n\n";
-//        }
+        remover->start(2000);
+
     }
 
 
-    void MainWindow::testSlot(PathogenStats ps, ratioType rt) {
-        qDebug() << "testSlot() ps" << ps << "rt" << rt;
-    }
 
-    void MainWindow::testSlot(amountType at) {
-        qDebug() << "testSlot() at"<<at;
-    }
 
     MainWindow::~MainWindow()
     {

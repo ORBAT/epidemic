@@ -34,7 +34,6 @@ namespace QtEpidemy {
 
 
         virtual QwtText label(double v) const {
-            qDebug() << Q_FUNC_INFO << "called for" << v << "ticks";
             /*
              Time is measured in ticks in-game, and DT days elapse every tick (see
              constants.h for value). The value that gets passed to label(double) is
@@ -50,7 +49,7 @@ namespace QtEpidemy {
               */
             int secondsElapsed = (v * DT) * 86400; // 24h * 60min * 60sec
             QDateTime derp = m_start.addSecs(secondsElapsed);
-            return derp.toString("yy-M-dd hh");
+            return derp.toString("M/dd hh");
         }
 
 
@@ -61,23 +60,35 @@ namespace QtEpidemy {
 
     class City;
 
+
+
     class MdiPlot : public QWidget
     {
         Q_OBJECT
 
     public:
-        explicit MdiPlot(City *c, int plotSize, QWidget *parent = 0);
+        explicit MdiPlot(City *c, int plotSize, const QDateTime &start, QWidget *parent = 0);
         ~MdiPlot();
 
     protected:
         void changeEvent(QEvent *e);
         City *m_city;
         int m_plotSize;
-        double *m_xarray; // the data for the x-axis
-        QList<double*> m_yarrayList; // contains all the arrays used for the Y-axis data
-        QList<QwtPlotCurve*> m_pcList; // all the QwtPlotCurves currently in the QwtPlot
+
+        struct CurveData {
+            QwtPlotCurve *curve;
+            double *curvePoints;  // array of points on the curve
+        };
+
+        /* this list has CS_MAX_STATS elements. It is used to store all City stats
+           (a maximum of m_plotSize values are stored) and the associated curve of the
+           stat (if any) */
+        QList<CurveData> m_curveData;
+
+        double *m_xAxisData; // the data for the x-axis
 
         CityStats m_scaleBy; // scale y-axis by this City stat. CS_POPULATION by default
+
         /* how many curves there are on the current plot. Basically the same as the number
            of non-null elements in m_yarrayList or m_pcList */
         quint8 m_numCurves;
@@ -86,19 +97,26 @@ namespace QtEpidemy {
 
 
     public slots:
+        /* used to add data to a City stat. Note that this WON'T cause the data to be shown.
+           showStatistic() will actually add the curve, and replot() will, well, replot
+           everything */
         void cityStatUpdate(CityStats, amountType);
         void changeYScale(CityStats);
 
-        // adds a new curve for the specified statistic
-        void followStatistic(CityStats);
+        // shows the curve for the specified statistic
+        void showStatistic(CityStats);
+        // hides the curve for a statistic
+        void hideStatistic(CityStats cs = CS_INFECTED);
+
         void replot();
 
     protected slots:
-        void deleteCurveData();  // deletes all curve data from m_yarrayList
+//        void deleteCurveData();  // deletes all curve data from m_yarrayList
 
 
     private:
         Ui::MdiPlot *ui;
+        QwtPlot * m_qwtPlot;
     };
 
 }

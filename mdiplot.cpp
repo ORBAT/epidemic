@@ -1,18 +1,23 @@
 #include <QDebug>
+#include <QFontMetrics>
+#include <qwt_plot_curve.h>
+#include <qwt_plot_layout.h>
+#include <qwt_painter.h>
+#include <qwt_plot_canvas.h>
+#include <qwt_scale_widget.h>
+#include <qwt_legend.h>
+#include <qwt_legend_item.h>
 #include "mdiplot.h"
 #include "ui_mdiplot.h"
-#include "qwt_plot_curve.h"
-#include "qwt_painter.h"
-#include "qwt_plot_canvas.h"
 #include "city.h"
 
 namespace QtEpidemy {
 
-    MdiPlot::MdiPlot(City *c, int plotSize, QWidget *parent) :
+    MdiPlot::MdiPlot(City *c, int plotSize, const QDateTime &start, QWidget *parent) :
             QWidget(parent),
             m_city(c),
             m_plotSize(plotSize),
-            m_xarray(new double[plotSize]),
+            m_xAxisData(new double[plotSize]),
             m_scaleBy(CS_POPULATION),
             m_numCurves(0),
             m_numDataPoints(0),
@@ -21,32 +26,57 @@ namespace QtEpidemy {
 
         setAttribute(Qt::WA_DeleteOnClose);
 
-        ::QwtPainter::setDeviceClipping(false); // disable polygon clipping
+
         ui->setupUi(this);
+        m_qwtPlot = ui->qwtPlot;
 
         for(int i = 0; i < m_plotSize; ++i) {
-            m_xarray[m_plotSize - 1 - i] = i;
+//            m_xAxisData[m_plotSize - 1 - i] = i;
+            m_xAxisData[i] = m_plotSize - i - 1;
         }
 
         /* there are at most CS_MAX_STATS stats a City can send */
         for(int i = 0; i < CS_MAX_STATS; ++i) {
-            m_yarrayList.append(NULL);
-            m_pcList.append(NULL);
+            m_curveData.append(CurveData());
+            m_curveData[i].curve = NULL;
+            m_curveData[i].curvePoints = new double[m_plotSize];
+            for(int k = 0; k < m_plotSize; ++k) {
+                m_curveData[i].curvePoints[k] = 0;
+            }
         }
 
-        QwtPlot *plot = ui->qwtPlot;
-
         // disable caching
-        plot->canvas()->setPaintAttribute(QwtPlotCanvas::PaintCached, false);
-        plot->canvas()->setPaintAttribute(QwtPlotCanvas::PaintPacked, false);
+        m_qwtPlot->canvas()->setPaintAttribute(QwtPlotCanvas::PaintCached, false);
+        m_qwtPlot->canvas()->setPaintAttribute(QwtPlotCanvas::PaintPacked, false);
+        // disable polygon clipping
+        ::QwtPainter::setDeviceClipping(false);
 
-        plot->setAxisScale(QwtPlot::xBottom, 0, m_plotSize);
-        plot->setAxisLabelRotation(QwtPlot::xBottom, -50.0);
-        plot->setAxisLabelAlignment(QwtPlot::xBottom, Qt::AlignLeft | Qt::AlignBottom);
+        QwtLegend *legend = new QwtLegend();
+        legend->setItemMode(QwtLegend::ReadOnlyItem);
+        m_qwtPlot->insertLegend(legend);
 
-        plot->plotLayout()->setAlignCanvasToScales(true);
+//        m_qwtPlot->plotLayout()->setAlignCanvasToScales(true);
 
-        plot->setAxisScaleDraw(QwtPlot::yLeft, new AmountTypeScaleDraw());
+        m_qwtPlot->setAxisScaleDraw(QwtPlot::yLeft, new AmountTypeScaleDraw());
+        m_qwtPlot->setAxisScaleDraw(QwtPlot::xBottom, new DateScaleDraw(start));
+
+        m_qwtPlot->setAxisScale(QwtPlot::xBottom, 0, m_plotSize);
+        m_qwtPlot->setAxisLabelRotation(QwtPlot::xBottom, -75.0);
+        m_qwtPlot->setAxisLabelAlignment(QwtPlot::xBottom, Qt::AlignLeft | Qt::AlignTop);
+
+
+
+
+
+        /*
+         To avoid having the canvas jump every time there's a label at the rightmost
+         part of the X axis, a permanent margin needs to be added.
+
+         This trick is from Qwt's cpuplot example
+         */
+        QwtScaleWidget *scaleWidget = m_qwtPlot->axisWidget(QwtPlot::xBottom);
+        const int fontHgh = QFontMetrics(scaleWidget->font()).height();
+        scaleWidget->setMinBorderDist(0, fontHgh/2);
 
 
         // whenever a step's finished, replot the curves
@@ -63,32 +93,20 @@ namespace QtEpidemy {
 //        delete[] m_xarray;
     }
 
-    void MdiPlot::deleteCurveData() {
-        for(int i = 0; i < CS_MAX_STATS; ++i) {
-            delete[] m_yarrayList[i];
-        }
-    }
-
     void MdiPlot::cityStatUpdate(CityStats cs, amountType at) {
-        // TODO: only change scale if the value of the stat has changed
+
         if(cs == m_scaleBy) {
-            ui->qwtPlot->setAxisScale(QwtPlot::yLeft, 0, at);
+        // only change scale if the value of the stat has changed
+            if(m_curveData[cs].curvePoints[0] != at)
+                m_qwtPlot->setAxisScale(QwtPlot::yLeft, 0, at);
         }
 
-        if(m_numDataPoints < m_plotSize)
-            m_numDataPoints++;
+        DPR(tr("Received update for %2 (%3)").arg(CS_NAMES[cs]).arg(at));
 
-        /* do we have an array for the specified stat? If we do, then we're following
-           it */
-        if(m_yarrayList[cs] == NULL)
-            return;
+        double * yarr = m_curveData[cs].curvePoints;
 
-
-        qDebug() << tr("%1: received update for %2 (%3)").arg("cityStatUpdate()")
-                .arg(cs).arg(at);
-        double *yarr = m_yarrayList[cs];
         // shift data in array left
-        for(int i = m_numDataPoints; i > 0; --i) {
+        for(int i = m_numDataPoints - 1; i > 0; --i) {
             yarr[i] = yarr[i-1];
         }
         yarr[0] = (double)at;
@@ -99,45 +117,74 @@ namespace QtEpidemy {
         m_scaleBy = cs;
     }
 
-    void MdiPlot::followStatistic(CityStats cs) {
-        if(m_yarrayList[cs] != NULL) {
-            qDebug() << tr("%1: already following cs %2").arg("followStatistic()").arg(cs);
-            return;
-        }
-        qDebug() << tr("%1: following cs %2").arg("followStatistic()").arg(cs);
-        // create a new double[] for the data we want to follow
-        m_yarrayList[cs] = new double[m_plotSize];
+    void MdiPlot::showStatistic(CityStats cs) {
 
-        // zero the data
-        for(int i = 0; i < m_plotSize; ++i) {
-            m_yarrayList[cs][i] = 0;
-        }
         QwtPlotCurve *qcur = new QwtPlotCurve(CS_NAMES[cs]);
+        QPen qp;
 
-        // unique colors for the first NUMCOLORS curves
-        qcur->setPen(QPen(PENCOLORS[m_numCurves % NUMCOLORS]));
-        qcur->attach(ui->qwtPlot);
-        m_pcList[cs] = qcur;
+        // unique colors for the first CURVE_NUMCOLORS curves
+        qp.setColor(CURVE_PENCOLORS[m_numCurves % CURVE_NUMCOLORS]);
+        // and when we run out of colors, change the style
+        /*
+         Example with 3 colors and 3 styles:
+         curve # 0 1 2 3 4 5 6 7 8 9
+         color # 0 1 2 0 1 2 0 1 2 0
+         style # 0 0 0 1 1 1 2 2 2 0
+
+         This means that you can have at most CURVE_NUMCOLORS * CURVE_NUMSTYLES curves if
+         you want the color/style combination to be unique
+         */
+        qp.setStyle(CURVE_PENSTYLES[(m_numCurves / (CURVE_NUMCOLORS)) % CURVE_NUMSTYLES]);
+        qp.setWidth(2);
+
+
+        qcur->setPen(qp);
+
+        qcur->attach(m_qwtPlot);
+
+        m_curveData[cs].curve = qcur;
+
         m_numCurves++;
     }
 
+    void MdiPlot::hideStatistic(CityStats cs) {
+        DPR(tr("Hiding %1").arg(CS_NAMES[cs]));
+        QwtPlotCurve *&item = m_curveData[cs].curve;
+        // is the stat actually being shown?
+        if(item != NULL) {
+            item->hide();
+            item->detach();
+            delete item;
+            item = NULL;
+        }
+    }
+
+
     void MdiPlot::replot() {
+
+        if(m_numDataPoints < m_plotSize)
+            ++m_numDataPoints;
+
 
         // "shift" the X axis to the left
         for(int i = 0; i < m_plotSize; ++i) {
-            m_xarray[i]++;
+            m_xAxisData[i]++;
         }
 
-        for(int i = 0; i < CS_MAX_STATS; ++i) {
-            if(m_pcList.at(i) != NULL)
-                m_pcList[i]->setRawData(m_xarray, m_yarrayList.at(i), m_numDataPoints);
+        // rescale the X axis to fit the new X axis data.
+        m_qwtPlot->setAxisScale(QwtPlot::xBottom,
+                                  m_xAxisData[m_plotSize-1], m_xAxisData[0]);
+
+
+        for(int i = 0; i < CS_MAX_STATS; i++) {
+            if(m_curveData.at(i).curve != NULL)
+                m_curveData[i].curve->setRawData(m_xAxisData, m_curveData.at(i).curvePoints,
+                                                 m_numDataPoints);
         }
 
-        ui->qwtPlot->replot();
+        m_qwtPlot->replot();
 
-        // rescale the X axis to fit the new
-        ui->qwtPlot->setAxisScale(QwtPlot::xBottom,
-                                  m_xarray[m_plotSize-1], m_xarray[0]);
+
 
 
     }

@@ -31,10 +31,6 @@ namespace QtEpidemy {
 
     private:
         Ui::MainWindow *ui;
-
-    private slots:
-        void testSlot(amountType);
-        void testSlot(PathogenStats, ratioType);
     };
 }
 #endif // MAINWINDOW_H
