@@ -67,7 +67,8 @@ namespace QtEpidemy {
         m_qwtPlot->setAxisLabelRotation(QwtPlot::xBottom, -75.0);
         m_qwtPlot->setAxisLabelAlignment(QwtPlot::xBottom, Qt::AlignLeft | Qt::AlignTop);
 
-
+        this->connect(m_settingsController, SIGNAL(checked(CityStats,bool)),
+                      SLOT(setStatVisibility(CityStats,bool)));
 
 
 
@@ -126,6 +127,10 @@ namespace QtEpidemy {
 
     void MdiPlot::showStatistic(CityStats cs) {
 
+        // if m_curveData has a pointer for this stat, it's already being displayed
+        if(m_curveData[cs].curve) {
+            return;
+        }
         QwtPlotCurve *qcur = new QwtPlotCurve(CS_NAMES[cs]);
         QPen qp;
 
@@ -194,6 +199,7 @@ namespace QtEpidemy {
     }
 
     void MdiPlot::setStatVisibility(CityStats cs, bool visible) {
+        DPR(tr("%1 to %2").arg(CS_NAMES[cs]).arg(visible));
         if(visible)
             showStatistic(cs);
         else

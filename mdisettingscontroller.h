@@ -42,6 +42,7 @@ namespace QtEpidemy {
 
         MdiSettingsControllerPrivate * const pd;
 
+        friend class MdiSettingsControllerPrivate;
 
         const int MAXCOLUMNS;
 

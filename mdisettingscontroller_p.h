@@ -26,7 +26,7 @@ namespace QtEpidemy {
             /* if the sender actually has a "citystat" property. Note that this DOESN'T
                check whether the property is an int or not */
             if(qv.isValid()) {
-                emit qp->checked(qv.toInt(), checked);
+                emit qp->checked((CityStats)qv.toInt(), checked);
             }
         }
 
