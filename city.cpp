@@ -4,7 +4,7 @@
 
 namespace QtEpidemy {
 
-    City::City(QString name, amountType population, QObject *parent) :
+    City::City(const QString &name, AmountType population, const QPoint &pos, QObject *parent) :
             QObject(parent),
             m_pathogen(NULL),   // no pathogens when we start out
             m_name(name),
@@ -21,13 +21,14 @@ namespace QtEpidemy {
             m_dailyQuarantinedRecoveries(0.0),
             m_dailyInfections(0.0),
             m_dailyQuarantines(0.0),
-            m_susceptible((ratioType)population),
-            m_population((ratioType)population),
+            m_susceptible((RatioType)population),
+            m_population((RatioType)population),
             m_infected(0.0),
             m_recovered(0.0),
             m_dead(0.0),
             m_quarantined(0.0),
-            m_memberPointers((int)CS_MAX_STATS)
+            m_memberPointers((int)CS_MAX_STATS),
+            m_position(pos)
     {
         //qDebug() << tr("City() %1 constructed with population %2").arg(name).arg(population);
         DPR(tr("%1 constructed with population %2").arg(name).arg(population));
@@ -54,14 +55,16 @@ namespace QtEpidemy {
 
     }
 
-
+    City::~City() {
+        CDPR("Imma dyin!");
+    }
 
     //// SLOTS
     //////////
 
     void City::step() {
 
-        DPR("start step");
+//        DPR("start step");
 
         /* calculations of statistics should be done so that total statistics are calculated
            first and daily statistics last */
@@ -83,8 +86,8 @@ namespace QtEpidemy {
             emitStat((CityStats)i);
         }
 
-        CDPR(tr("Sum of alive+dead people (should be the same as original pop) %1")
-             .arg(m_susceptible+m_infected+m_recovered+m_dead+m_quarantined));
+//        CDPR(tr("Sum of alive+dead people (should be the same as original pop) %1")
+//             .arg(m_susceptible+m_infected+m_recovered+m_dead+m_quarantined));
 
         emit stepped(); /* so that plots know when they need to redraw their data */
     }
@@ -101,12 +104,12 @@ namespace QtEpidemy {
         }
 
         m_pathogen = pp;
-        this->connect(m_pathogen, SIGNAL(statChanged(PathogenStats,ratioType)),
-                      SLOT(pathogenStatChanged(PathogenStats,ratioType)));
+        this->connect(m_pathogen, SIGNAL(statChanged(PathogenStats,RatioType)),
+                      SLOT(pathogenStatChanged(PathogenStats,RatioType)));
 
     }
 
-    void City::setBonus(const PathogenStats &pst, const ratioType &rt) {
+    void City::setBonus(const PathogenStats &pst, const RatioType &rt) {
 
         switch(pst) {
         case PS_SURVIVAL:
@@ -126,11 +129,11 @@ namespace QtEpidemy {
 
 
     void City::emitStat(const CityStats &cs) {
-        CDPR(tr("Forced emit of %1").arg(CS_NAMES[cs]));
+//        CDPR(tr("Forced emit of %1").arg(CS_NAMES[cs]));
         emit statUpdate(cs, *m_memberPointers[cs]);
     }
 
-    void City::pathogenStatChanged(const PathogenStats &ps, const ratioType &rt) {
+    void City::pathogenStatChanged(const PathogenStats &ps, const RatioType &rt) {
         DPR(tr("%1 stat %2 (%3)").arg(m_name).arg(PS_NAMES[ps]).arg(rt));
         switch(ps) {
         case PS_DURATION:
@@ -147,8 +150,8 @@ namespace QtEpidemy {
         }
     }
 
-    void City::addInfected(const amountType &at) {
-        m_infected += (ratioType)at;
+    void City::addInfected(const AmountType &at) {
+        m_infected += (RatioType)at;
     }
 
 

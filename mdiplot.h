@@ -71,6 +71,9 @@ namespace QtEpidemy {
         explicit MdiPlot(City *c, int plotSize, const QDateTime &start, QWidget *parent = 0);
         ~MdiPlot();
 
+    signals:
+        void statVisibilityToggled(CityStats, bool);
+
     protected:
         void changeEvent(QEvent *e);
         City *m_city;
@@ -105,7 +108,7 @@ namespace QtEpidemy {
         /* used to add data to a City stat. Note that this WON'T cause the data to be shown.
            showStatistic() will actually add the curve, and replot() will, well, replot
            everything */
-        void cityStatUpdate(CityStats, amountType);
+        void cityStatUpdate(CityStats, AmountType);
         void changeYScale(CityStats);
 
         // shows the curve for the specified statistic
@@ -117,9 +120,6 @@ namespace QtEpidemy {
         void setStatVisibility(CityStats cs, bool);
 
         void replot();
-
-    protected slots:
-//        void deleteCurveData();  // deletes all curve data from m_yarrayList
 
 
     private:

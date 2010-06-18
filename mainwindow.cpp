@@ -6,42 +6,45 @@
 #include "city.h"
 #include "pathogen.h"
 #include "mdiplot.h"
+#include "citycontroller.h"
 
 
 namespace QtEpidemy {
 
     MainWindow::MainWindow(QWidget *parent) :
             QMainWindow(parent),
-            c(new City(tr("Derperton"), 10000, this)),
             p(new Pathogen(1,0,1,this)),
+            m_cityController(new CityController(this)),
             ui(new Ui::MainWindow)
     {
         ui->setupUi(this);
-        c->setPathogen(p);
-        p->setStatistic(PS_DURATION, 5.0);
-        p->setStatistic(PS_INFECTION, 0.002);
+//        c->setPathogen(p);
+        p->setStatistic(PS_DURATION, 8.0);
+        p->setStatistic(PS_INFECTION, 0.0001);
         p->setStatistic(PS_SURVIVAL, 0.9);
+//        MdiPlot *mp = new MdiPlot(c, 100, QDateTime::currentDateTime());
+//        mp->showStatistic(CS_INFECTED);
+//        mp->showStatistic(CS_SUSCEPTIBLE);
+//        mp->showStatistic(CS_DEAD);
+//        ui->centralWidget->addSubWindow(mp);
+        m_cityController->createCity("Derp", 100000, QPoint(42,42));
+        City *c = m_cityController->getCity("Derp");
+        MdiPlot *mp = NULL;
+        if(c) {
+            mp = new MdiPlot(c, 100, QDateTime::currentDateTime());
+            ui->centralWidget->addSubWindow(mp, Qt::SubWindow);
+        }
 
-        MdiPlot *mp = new MdiPlot(c, 100, QDateTime::currentDateTime());
-        mp->showStatistic(CS_INFECTED);
-        mp->showStatistic(CS_SUSCEPTIBLE);
-        mp->showStatistic(CS_DEAD);
-        ui->centralWidget->addSubWindow(mp);
-        QTimer *timer = new QTimer(this);
-//        QTimer *remover = new QTimer(this);
-//        remover->setSingleShot(true);
+        connectActions();
 
-        connect(timer, SIGNAL(timeout()), c, SLOT(step()));
-//        connect(remover, SIGNAL(timeout()), mp, SLOT(hideStatistic()));
-
-        c->addInfected(1);
-        timer->start(450);
-//        remover->start(2000);
 
     }
 
 
-
+    void MainWindow::connectActions() {
+        connect(ui->actionStart, SIGNAL(triggered()), m_cityController, SLOT(start()));
+        connect(ui->actionPause, SIGNAL(triggered()), m_cityController, SLOT(pause()));
+    }
 
     MainWindow::~MainWindow()
     {

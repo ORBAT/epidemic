@@ -7,7 +7,7 @@
 
 namespace QtEpidemy {
 
-    Pathogen::Pathogen(ratioType survival, ratioType infection, ratioType duration,
+    Pathogen::Pathogen(RatioType survival, RatioType infection, RatioType duration,
                        QObject *parent) :
     QObject(parent), m_stats()
     {
@@ -18,9 +18,9 @@ namespace QtEpidemy {
                 .arg(survival).arg(infection).arg(duration);
     }
 
-    void Pathogen::setStatistic(PathogenStats ps, ratioType rt) {
+    void Pathogen::setStatistic(PathogenStats ps, RatioType rt) {
         qDebug() << "Pathogen::setStatistic() ps" << ps << "rt" << rt;
-        clampToZero<ratioType>(rt);
+        clampToZero<RatioType>(rt);
         QWriteLocker locker(&lock);
         m_stats[ps] = rt;
         emit statChanged(ps, rt);

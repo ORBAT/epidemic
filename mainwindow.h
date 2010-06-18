@@ -10,6 +10,7 @@ namespace Ui {
 
 namespace QtEpidemy {
     class City;
+    class CityController;
     class Pathogen;
 
 
@@ -26,8 +27,11 @@ namespace QtEpidemy {
 
     protected:
         void changeEvent(QEvent *e);
-        City *c;
+//        City *c;
         Pathogen *p;
+        CityController *m_cityController;
+
+        void connectActions();
 
     private:
         Ui::MainWindow *ui;

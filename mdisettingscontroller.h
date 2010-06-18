@@ -18,7 +18,8 @@ namespace QtEpidemy {
     {
         Q_OBJECT
     public:
-        explicit MdiSettingsController(QGridLayout *&settingsGrid, QObject *parent = 0);
+        explicit MdiSettingsController(QGridLayout *&settingsGrid, QWidget *&parentWidget,
+                                       QObject *parent = 0);
 
     signals:
         // emitted when a checkbox is toggled
@@ -28,22 +29,19 @@ namespace QtEpidemy {
         // set the checked state of a specific stat's checkbox
         void setChecked(CityStats, bool state = true);
 
-    protected:
-
-        // the grid we need to populate
-        QGridLayout *m_settingsGrid;
-        QList<QCheckBox*> m_checkboxes;
 
     private:
         /* This little feller is used to hide implementation details. I couldn't figure out
            a sensible way to make slots private (ie. so that no outside class can connect to
            them, so I put all the internal logic into a separate class that can only be
-           instantiated by MdiSettingsController */
+           instantiated by MdiSettingsController.
+
+           This "solution" is not exactly optimal.
+        */
         MdiSettingsControllerPrivate * const pd;
 
         friend class MdiSettingsControllerPrivate;
 
-        const int MAXCOLUMNS;
 
     };
 

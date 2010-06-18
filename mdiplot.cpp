@@ -30,7 +30,15 @@ namespace QtEpidemy {
 
         ui->setupUi(this);
         m_qwtPlot = ui->qwtPlot;
-        m_settingsController = new MdiSettingsController(ui->settingsGridLayout, this);
+        m_settingsController = new MdiSettingsController(ui->settingsGridLayout,
+                                                         ui->settingsTab, this);
+
+
+        this->connect(m_settingsController, SIGNAL(checked(CityStats,bool)),
+                      SLOT(setStatVisibility(CityStats,bool)));
+
+        m_settingsController->connect(this, SIGNAL(statVisibilityToggled(CityStats,bool)),
+                                      SLOT(setChecked(CityStats,bool)));
 
 
         for(int i = 0; i < m_plotSize; ++i) {
@@ -56,7 +64,8 @@ namespace QtEpidemy {
 
         QwtLegend *legend = new QwtLegend();
         legend->setItemMode(QwtLegend::ReadOnlyItem);
-        m_qwtPlot->insertLegend(legend);
+        m_qwtPlot->insertLegend(legend, QwtPlot::TopLegend);
+
 
 //        m_qwtPlot->plotLayout()->setAlignCanvasToScales(true);
 
@@ -67,8 +76,6 @@ namespace QtEpidemy {
         m_qwtPlot->setAxisLabelRotation(QwtPlot::xBottom, -75.0);
         m_qwtPlot->setAxisLabelAlignment(QwtPlot::xBottom, Qt::AlignLeft | Qt::AlignTop);
 
-        this->connect(m_settingsController, SIGNAL(checked(CityStats,bool)),
-                      SLOT(setStatVisibility(CityStats,bool)));
 
 
 
@@ -87,8 +94,8 @@ namespace QtEpidemy {
         this->connect(m_city, SIGNAL(stepped()), SLOT(replot()));
 //        this->connect(this, SIGNAL(destroyed()), SLOT(deleteCurveData()));
 
-        this->connect(m_city, SIGNAL(statUpdate(CityStats,amountType)),
-                      SLOT(cityStatUpdate(CityStats,amountType)));
+        this->connect(m_city, SIGNAL(statUpdate(CityStats,AmountType)),
+                      SLOT(cityStatUpdate(CityStats,AmountType)));
 
     }
 
@@ -101,7 +108,7 @@ namespace QtEpidemy {
 
     }
 
-    void MdiPlot::cityStatUpdate(CityStats cs, amountType at) {
+    void MdiPlot::cityStatUpdate(CityStats cs, AmountType at) {
 
         if(cs == m_scaleBy) {
         // only change scale if the value of the stat has changed
@@ -109,7 +116,10 @@ namespace QtEpidemy {
                 m_qwtPlot->setAxisScale(QwtPlot::yLeft, 0, at);
         }
 
-        DPR(tr("Received update for %2 (%3)").arg(CS_NAMES[cs]).arg(at));
+#ifdef QT_DEBUG
+        if(m_curveData[cs].curvePoints[0] != at)
+            DPR(tr("Received update for %2 (%3)").arg(CS_NAMES[cs]).arg(at));
+#endif
 
         double * yarr = m_curveData[cs].curvePoints;
 
@@ -126,7 +136,7 @@ namespace QtEpidemy {
     }
 
     void MdiPlot::showStatistic(CityStats cs) {
-
+        emit statVisibilityToggled(cs,true);
         // if m_curveData has a pointer for this stat, it's already being displayed
         if(m_curveData[cs].curve) {
             return;
@@ -171,6 +181,7 @@ namespace QtEpidemy {
     }
 
     void MdiPlot::hideStatistic(CityStats cs) {
+        emit statVisibilityToggled(cs,false);
         DPR(tr("Hiding %1").arg(CS_NAMES[cs]));
         QwtPlotCurve *&item = m_curveData[cs].curve;
         // is the stat actually being shown?
@@ -211,6 +222,7 @@ namespace QtEpidemy {
 
     void MdiPlot::setStatVisibility(CityStats cs, bool visible) {
         DPR(tr("%1 to %2").arg(CS_NAMES[cs]).arg(visible));
+
         if(visible)
             showStatistic(cs);
         else
