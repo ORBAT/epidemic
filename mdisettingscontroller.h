@@ -39,7 +39,6 @@ namespace QtEpidemy {
            a sensible way to make slots private (ie. so that no outside class can connect to
            them, so I put all the internal logic into a separate class that can only be
            instantiated by MdiSettingsController */
-
         MdiSettingsControllerPrivate * const pd;
 
         friend class MdiSettingsControllerPrivate;

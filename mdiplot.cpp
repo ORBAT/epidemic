@@ -131,8 +131,19 @@ namespace QtEpidemy {
         if(m_curveData[cs].curve) {
             return;
         }
+
+
         QwtPlotCurve *qcur = new QwtPlotCurve(CS_NAMES[cs]);
         QPen qp;
+
+        /**
+          FIXME:
+          QwtPlotCurve styles work just fine as long as you don't remove curves...
+          After adding 3 curves, I'll have red, green and blue curves. If I untoggle
+          the green one and then select another one, I'll end up with a red and 2 blue
+          curves because all MdiPlot knows is the total amount of curves, not the styles
+          they're using
+         */
 
         // unique colors for the first CURVE_NUMCOLORS curves
         qp.setColor(CURVE_PENCOLORS[m_numCurves % CURVE_NUMCOLORS]);
