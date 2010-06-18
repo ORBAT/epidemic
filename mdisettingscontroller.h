@@ -8,8 +8,11 @@
 
 
 class QGridLayout;
+class QSignalMapper;
 
 namespace QtEpidemy {
+
+    class MdiSettingsControllerPrivate;
 
     class MdiSettingsController : public QObject
     {
@@ -18,7 +21,7 @@ namespace QtEpidemy {
         explicit MdiSettingsController(QGridLayout *&settingsGrid, QObject *parent = 0);
 
     signals:
-        // emitted when a checkbox is poked
+        // emitted when a checkbox is toggled
         void checked(CityStats, bool);
 
     public slots:
@@ -31,8 +34,16 @@ namespace QtEpidemy {
         QGridLayout *m_settingsGrid;
         QList<QCheckBox*> m_checkboxes;
 
+    private:
+        /* This little feller is used to hide implementation details. I couldn't figure out
+           a sensible way to make slots private (ie. so that no outside class can connect to
+           them, so I put all the internal logic into a separate class that can only be
+           instantiated by MdiSettingsController */
+
+        MdiSettingsControllerPrivate * const pd;
 
 
+        const int MAXCOLUMNS;
 
     };
 

@@ -50,7 +50,22 @@
       <attribute name="title">
        <string>Settings</string>
       </attribute>
-      <layout class="QGridLayout" name="settingsGridLayout"/>
+      <layout class="QGridLayout" name="settingsTabLayout">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>Curve selection</string>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QGridLayout" name="settingsGridLayout"/>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>

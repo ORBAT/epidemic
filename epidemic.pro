@@ -29,7 +29,8 @@ HEADERS  += mainwindow.h \
     constants.h \
     mdiplot.h \
     citycontroller.h \
-    mdisettingscontroller.h
+    mdisettingscontroller.h \
+    mdisettingscontroller_p.h
 
 FORMS    += mainwindow.ui \
     mdiplot.ui
