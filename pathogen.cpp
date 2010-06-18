@@ -7,15 +7,15 @@
 
 namespace QtEpidemy {
 
-    Pathogen::Pathogen(RatioType survival, RatioType infection, RatioType duration,
+    Pathogen::Pathogen(RatioType survivalR, RatioType contactR, RatioType duration,
                        QObject *parent) :
     QObject(parent), m_stats()
     {
         m_stats[PS_DURATION] = duration;
-        m_stats[PS_INFECTION] = infection;
-        m_stats[PS_SURVIVAL] = survival;
+        m_stats[PS_CONTACTRATE] = contactR;
+        m_stats[PS_SURVIVALRATE] = survivalR;
         qDebug() << tr("Pathogen created with survival rate %1, infection %2, duration %3 days")
-                .arg(survival).arg(infection).arg(duration);
+                .arg(survivalR).arg(contactR).arg(duration);
     }
 
     void Pathogen::setStatistic(PathogenStats ps, RatioType rt) {

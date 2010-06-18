@@ -11,6 +11,7 @@
 #include "ui_mdiplot.h"
 #include "city.h"
 #include "mdisettingscontroller.h"
+#include "pathogen.h"
 
 namespace QtEpidemy {
 
@@ -216,6 +217,10 @@ namespace QtEpidemy {
                 m_curveData[i].curve->setRawData(m_xAxisData, m_curveData.at(i).curvePoints,
                                                  m_numDataPoints);
         }
+
+        // calculate the basic reproduction number of the disease R_0 in this city
+        // TODO FIXME DERP HUR
+//        m_city->getPathogen()->getPathogenStat(PS_CONTACTRATE) * m_city->g;
 
         m_qwtPlot->replot();
     }

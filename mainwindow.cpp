@@ -20,8 +20,8 @@ namespace QtEpidemy {
         ui->setupUi(this);
 //        c->setPathogen(p);
         p->setStatistic(PS_DURATION, 8.0);
-        p->setStatistic(PS_INFECTION, 0.0001);
-        p->setStatistic(PS_SURVIVAL, 0.9);
+        p->setStatistic(PS_CONTACTRATE, 0.0001);
+        p->setStatistic(PS_SURVIVALRATE, 0.9);
 //        MdiPlot *mp = new MdiPlot(c, 100, QDateTime::currentDateTime());
 //        mp->showStatistic(CS_INFECTED);
 //        mp->showStatistic(CS_SUSCEPTIBLE);
@@ -34,10 +34,7 @@ namespace QtEpidemy {
             mp = new MdiPlot(c, 100, QDateTime::currentDateTime());
             ui->centralWidget->addSubWindow(mp, Qt::SubWindow);
         }
-
         connectActions();
-
-
     }
 
 

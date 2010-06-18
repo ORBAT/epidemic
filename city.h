@@ -14,10 +14,11 @@ namespace QtEpidemy {
     class Pathogen;
 
     /*
-  Disease models blatantly stolen from http://mvhs1.mbhs.edu/mvhsproj/epidemic/epidemic.html
-  with slight modifications: I combined the second and third models so that quarantines are
-  also taken into account along with deaths and recoveries
-  */
+      Epidemic model mostly from http://en.wikipedia.org/wiki/Epidemic_model with some
+      modifications
+    */
+
+
 
 
 
@@ -37,7 +38,13 @@ namespace QtEpidemy {
             return m_position;
         }
 
+        inline const Pathogen* getPathogen() const {
+            return m_pathogen;
+        }
 
+        inline RatioType getCityStat(CityStat cs) const {
+            return *m_memberPointers[cs];
+        }
 
 
     signals:
@@ -59,8 +66,8 @@ namespace QtEpidemy {
         void quarantineRate(AmountType);
         void population(AmountType);
 
-        void statUpdate(CityStats, AmountType);
-        void statChanged(CityStats);
+        void statUpdate(CityStat, AmountType);
+        void statChanged(CityStat);
 
         void stepped();
 
@@ -169,7 +176,7 @@ namespace QtEpidemy {
         /* if the new value is different from the old value, change the old value and
            emit the statChanged signal */
         inline void emitAndChangeIfDiff(const RatioType &newVal, RatioType &orig,
-                                        const CityStats &cs) {
+                                        const CityStat &cs) {
             if(newVal != orig) {
                 CDPR_STAT(newVal, orig);
                 orig = newVal;
@@ -184,14 +191,7 @@ namespace QtEpidemy {
                 val = calcDailyDeathsForGroup(m_infected);
             }
 
-
-
             emitAndChangeIfDiff(val, m_dailyInfectedDeaths, CS_D_INF_DEATHS);
-//            if(val != m_dailyInfectedDeaths) {
-//                m_dailyInfectedDeaths = val;
-//                emit statChanged(CS_D_INF_DEATHS);
-//            }
-
         }
 
         inline void calcDailyQuarantinedDeaths() {
@@ -202,38 +202,23 @@ namespace QtEpidemy {
             }
 
             emitAndChangeIfDiff(val, m_dailyQuarantinedDeaths, CS_D_QUAR_DEATHS);
-//            if(val != m_dailyQuarantinedDeaths) {
-//                m_dailyQuarantinedDeaths = val;
-//                emit statChanged(CS_D_QUAR_DEATHS);
-//            }
         }
 
         inline void calcDailyInfectedRecoveries() {
             RatioType val = 0;
 
             if(m_infected != 0) {
-                val = m_infected *
-                               m_survivalRate / m_diseaseDuration;
-                qDebug() << tr("%3 new %1, old %2").arg(val).arg(m_dailyInfectedRecoveries).arg("calcDailyInfectedRecoveries();");
+                val = m_infected * m_survivalRate / m_diseaseDuration;
             }
-
-            if(val != m_dailyInfectedRecoveries) {
-                m_dailyInfectedRecoveries = val;
-                emit statChanged(CS_D_INF_RECOVER);
-            }
+            emitAndChangeIfDiff(val,m_dailyInfectedRecoveries,CS_D_INF_RECOVER);
         }
 
         inline void calcDailyQuarantinedRecoveries() {
             RatioType val = 0;
             if(m_quarantined != 0) {
-                val = m_quarantined *
-                         m_survivalRate / m_diseaseDuration;
+                val = m_quarantined * m_survivalRate / m_diseaseDuration;
             }
-
-            if(val != m_dailyQuarantinedRecoveries) {
-                m_dailyQuarantinedRecoveries = val;
-                emit statChanged(CS_D_QUAR_RECOVER);
-            }
+            emitAndChangeIfDiff(val, m_dailyQuarantinedRecoveries, CS_D_QUAR_RECOVER);
         }
 
         inline void calcDailyInfections() {
@@ -247,12 +232,6 @@ namespace QtEpidemy {
             val = std::min<RatioType>(val, m_susceptible);
 
             emitAndChangeIfDiff(val, m_dailyInfections, CS_D_INFECTIONS);
-//            if(val != m_dailyInfections) {
-
-//                m_dailyInfections = val;
-//                emit statChanged(CS_D_INFECTIONS);
-//            }
-
         }
 
         inline void calcDailyQuarantines() {
@@ -288,7 +267,6 @@ namespace QtEpidemy {
                               m_dailyQuarantines -
                               m_dailyInfectedDeaths) * DT);
 
-            CDPR_STAT(val,m_infected);
             clampToZero<RatioType>(val);
             emitAndChangeIfDiff(val,m_infected,CS_INFECTED);
         }
@@ -303,7 +281,6 @@ namespace QtEpidemy {
                                       m_dailyQuarantinedRecoveries) * DT);
 
             }
-            CDPR_STAT(val,m_recovered);
             emitAndChangeIfDiff(val,m_recovered, CS_INFECTED);
         }
 
@@ -313,7 +290,6 @@ namespace QtEpidemy {
                 val = m_dead + (m_dailyInfectedDeaths +
                                 m_dailyQuarantinedDeaths) * DT;
             }
-            CDPR_STAT(val,m_dead);
             emitAndChangeIfDiff(val, m_dead, CS_DEAD);
 
         }
@@ -324,7 +300,6 @@ namespace QtEpidemy {
                                             m_dailyQuarantinedDeaths -
                                             m_dailyQuarantinedRecoveries)
                                          * DT;
-            CDPR_STAT(val,m_quarantined);
 
             clampToZero<RatioType>(val);
 
@@ -335,7 +310,6 @@ namespace QtEpidemy {
             // Count every person who's still alive
             RatioType val = m_susceptible + m_infected + m_recovered +
                              m_quarantined;
-            CDPR_STAT(val,m_population);
             emitAndChangeIfDiff(val, m_population, CS_POPULATION);
         }
 
@@ -351,13 +325,13 @@ namespace QtEpidemy {
 
         void setPathogen(Pathogen*);
 
-        void pathogenStatChanged(const PathogenStats&, const RatioType&);
+        void pathogenStatChanged(const PathogenStat&, const RatioType&);
 
-        void setBonus(const PathogenStats&, const RatioType&);
+        void setBonus(const PathogenStat&, const RatioType&);
 
         void addInfected(const AmountType&);
 
-        void emitStat(const CityStats&);                    // forces an emit of a statistic
+//        void emitStat(const CityStats&);                    // forces an emit of a statistic
 
     };
 

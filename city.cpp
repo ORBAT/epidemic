@@ -83,7 +83,8 @@ namespace QtEpidemy {
         calcDailyQuarantines();
 
         for(int i = 0; i < CS_MAX_STATS; ++i) { // emit all stats
-            emitStat((CityStats)i);
+//            emitStat((CityStats)i);
+            emit statUpdate((CityStat)i, *m_memberPointers[i]);
         }
 
 //        CDPR(tr("Sum of alive+dead people (should be the same as original pop) %1")
@@ -104,18 +105,18 @@ namespace QtEpidemy {
         }
 
         m_pathogen = pp;
-        this->connect(m_pathogen, SIGNAL(statChanged(PathogenStats,RatioType)),
-                      SLOT(pathogenStatChanged(PathogenStats,RatioType)));
+        this->connect(m_pathogen, SIGNAL(statChanged(PathogenStat,RatioType)),
+                      SLOT(pathogenStatChanged(PathogenStat,RatioType)));
 
     }
 
-    void City::setBonus(const PathogenStats &pst, const RatioType &rt) {
+    void City::setBonus(const PathogenStat &pst, const RatioType &rt) {
 
         switch(pst) {
-        case PS_SURVIVAL:
+        case PS_SURVIVALRATE:
             m_bonusSurvivalRate = rt;
             break;
-        case PS_INFECTION:
+        case PS_CONTACTRATE:
             m_bonusInfectionRate = rt;
             break;
         case PS_DURATION:
@@ -128,21 +129,21 @@ namespace QtEpidemy {
 
 
 
-    void City::emitStat(const CityStats &cs) {
-//        CDPR(tr("Forced emit of %1").arg(CS_NAMES[cs]));
-        emit statUpdate(cs, *m_memberPointers[cs]);
-    }
+//    void City::emitStat(const CityStats &cs) {
+////        CDPR(tr("Forced emit of %1").arg(CS_NAMES[cs]));
+//        emit statUpdate(cs, *m_memberPointers[cs]);
+//    }
 
-    void City::pathogenStatChanged(const PathogenStats &ps, const RatioType &rt) {
+    void City::pathogenStatChanged(const PathogenStat &ps, const RatioType &rt) {
         DPR(tr("%1 stat %2 (%3)").arg(m_name).arg(PS_NAMES[ps]).arg(rt));
         switch(ps) {
         case PS_DURATION:
             m_diseaseDuration = rt;
             break;
-        case PS_INFECTION:
+        case PS_CONTACTRATE:
             m_infectionRate = rt;
             break;
-        case PS_SURVIVAL:
+        case PS_SURVIVALRATE:
             m_survivalRate = rt;
             break;
         default:
