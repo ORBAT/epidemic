@@ -4,16 +4,16 @@
 #include <QObject>
 #include <QList>
 #include <QHash>
+#include <QStringList>
 
 #include "constants.h"
 
 class QTimer;
-class QPoint;
+class QPointF;
 
 namespace QtEpidemy {
 
     class City;
-
 
     class CityController : public QObject
     {
@@ -34,9 +34,18 @@ namespace QtEpidemy {
             return m_cities.value(name);
         }
 
+        inline QStringList getCityNames() const {
+            return m_cities.keys();
+        }
+
+        inline QList<City*> getCities() const {
+            return m_cities.values();
+        }
+
 
     signals:
-
+        void cityAdded(const QString&);
+        void cityRemoved(const QString&);
 
         //// SLOTS
         //////////
@@ -49,9 +58,9 @@ namespace QtEpidemy {
         // changes the delay between steps
         void changeStepDelay(int);
 
-        void createCity(const QString &name, AmountType population, const QPoint &position);
+        void createCity(const QString &name, AmountType population, const QPointF &position);
+        void removeCity(const QString &name);
 
-    protected slots:
         // runs step() on each City
         void step();
 

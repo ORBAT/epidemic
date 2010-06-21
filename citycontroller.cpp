@@ -1,10 +1,12 @@
 #include <QTimer>
-#include <QPoint>
+#include <QPointF>
 #include "city.h"
 #include "citycontroller.h"
 
 
 namespace QtEpidemy {
+
+
 
     CityController::CityController(QObject *parent) :
             QObject(parent), m_stepTimer(new QTimer(this)), m_stepDelay(300),
@@ -23,13 +25,20 @@ namespace QtEpidemy {
     }
 
     void CityController::createCity(const QString &name,
-                               AmountType population, const QPoint &position) {
+                               AmountType population, const QPointF &position) {
 
         City* c = new City(name, population, position, this);
         Q_ASSERT_X(!m_cities.contains(name), Q_FUNC_INFO,
                    "Trying to insert a city with duplicate name");
 
         m_cities[name] = c;
+        emit cityAdded(name);
+    }
+
+    void CityController::removeCity(const QString &name) {
+        if(m_cities.remove(name)) { // ie. QHash::remove() returns anything but 0
+            emit cityRemoved(name);
+        }
     }
 
     void CityController::start() {
@@ -53,6 +62,7 @@ namespace QtEpidemy {
         for(it = m_cities.begin(); it != end; ++it) {
             it.value()->step();
         }
+        ++m_ticks;
     }
 
 }

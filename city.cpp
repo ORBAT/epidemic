@@ -4,7 +4,7 @@
 
 namespace QtEpidemy {
 
-    City::City(const QString &name, AmountType population, const QPoint &pos, QObject *parent) :
+    City::City(const QString &name, AmountType population, const QPointF &pos, QObject *parent) :
             QObject(parent),
             m_pathogen(NULL),   // no pathogens when we start out
             m_name(name),

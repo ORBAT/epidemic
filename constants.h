@@ -10,7 +10,7 @@
 namespace QtEpidemy {
 
 
-    typedef double RatioType;
+    typedef qreal RatioType;
     typedef qint32 AmountType;
 
     typedef quint32 TickType;

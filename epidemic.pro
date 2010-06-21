@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     pathogen.cpp \
     mdiplot.cpp \
     citycontroller.cpp \
-    mdisettingscontroller.cpp
+    mdisettingscontroller.cpp \
+    citytablemodel.cpp
 
 HEADERS  += mainwindow.h \
     city.h \
@@ -30,7 +31,8 @@ HEADERS  += mainwindow.h \
     mdiplot.h \
     citycontroller.h \
     mdisettingscontroller.h \
-    mdisettingscontroller_p.h
+    mdisettingscontroller_p.h \
+    citytablemodel.h
 
 FORMS    += mainwindow.ui \
     mdiplot.ui

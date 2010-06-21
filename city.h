@@ -5,7 +5,7 @@
 #include <qdebug.h>
 #include <QObject>
 #include <QVarLengthArray>
-#include <QPoint>
+#include <QPointF>
 #include "constants.h"
 
 
@@ -30,11 +30,11 @@ namespace QtEpidemy {
     ///////////////////
     public:
         explicit City(const QString &name, AmountType population,
-                      const QPoint &pos = QPoint(), QObject *parent = 0);
+                      const QPointF &pos = QPointF(1.0,1.0), QObject *parent = 0);
 
         ~City();
 
-        inline const QPoint getPosition() const {
+        inline const QPointF getPosition() const {
             return m_position;
         }
 
@@ -67,7 +67,7 @@ namespace QtEpidemy {
         void population(AmountType);
 
         void statUpdate(CityStat, AmountType);
-        void statChanged(CityStat);
+        void statChanged(CityStat, AmountType);
 
         void stepped();
 
@@ -81,7 +81,7 @@ namespace QtEpidemy {
 
         Pathogen *m_pathogen;        // our friendly affliction, if any
 
-        QString m_name;
+        const QString m_name;
 
         // City-specific bonuses (can be positive OR negative) to some stats + quarantine rate
         RatioType m_bonusDuration;
@@ -146,7 +146,7 @@ namespace QtEpidemy {
            statistics easier (no need for a bazillion setter/getter functions, slots etc */
         QVarLengthArray<RatioType*, (int)CS_MAX_STATS> m_memberPointers;
 
-        const QPoint m_position;
+        const QPointF m_position;
 
 
 
@@ -182,7 +182,7 @@ namespace QtEpidemy {
 //                CDPR_STAT(newVal, orig);
                 CDPR(tr("%1 old %2 new %3").arg(CS_NAMES[cs]).arg(orig).arg(newVal));
                 orig = newVal;
-                emit statChanged(cs);
+                emit statChanged(cs, (AmountType)newVal);
             }
         }
 

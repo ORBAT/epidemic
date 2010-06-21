@@ -13,21 +13,14 @@ namespace QtEpidemy {
 
     MainWindow::MainWindow(QWidget *parent) :
             QMainWindow(parent),
-            p(new Pathogen(1,0,1,this)),
             m_cityController(new CityController(this)),
             ui(new Ui::MainWindow)
     {
         ui->setupUi(this);
-//        c->setPathogen(p);
-        p->setStatistic(PS_DURATION, 8.0);
-        p->setStatistic(PS_CONTACTRATE, 0.0001);
-        p->setStatistic(PS_SURVIVALRATE, 0.9);
-//        MdiPlot *mp = new MdiPlot(c, 100, QDateTime::currentDateTime());
-//        mp->showStatistic(CS_INFECTED);
-//        mp->showStatistic(CS_SUSCEPTIBLE);
-//        mp->showStatistic(CS_DEAD);
-//        ui->centralWidget->addSubWindow(mp);
-        m_cityController->createCity("Derp", 100000, QPoint(42,42));
+
+        additionalUiSetup();
+
+        m_cityController->createCity("Derp", 100000, QPointF(42.0,42.0));
         City *c = m_cityController->getCity("Derp");
         MdiPlot *mp = NULL;
         if(c) {
@@ -41,6 +34,10 @@ namespace QtEpidemy {
     void MainWindow::connectActions() {
         connect(ui->actionStart, SIGNAL(triggered()), m_cityController, SLOT(start()));
         connect(ui->actionPause, SIGNAL(triggered()), m_cityController, SLOT(pause()));
+    }
+
+    void MainWindow::additionalUiSetup() {
+        this->setWindowState(Qt::WindowMaximized);
     }
 
     MainWindow::~MainWindow()

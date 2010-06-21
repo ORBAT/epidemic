@@ -66,7 +66,7 @@ namespace QtEpidemy {
 
         qint32 m_numDataPoints; // how many data points have been collected so far
 
-        double m_r0RangeTop;
+        qreal m_r0RangeTop;
 
 
     public slots:

@@ -27,10 +27,9 @@ namespace QtEpidemy {
 
     protected:
         void changeEvent(QEvent *e);
-//        City *c;
-        Pathogen *p;
         CityController *m_cityController;
 
+        void additionalUiSetup();
         void connectActions();
 
     private:
