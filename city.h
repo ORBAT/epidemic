@@ -42,7 +42,7 @@ namespace QtEpidemy {
             return m_pathogen;
         }
 
-        inline RatioType getCityStat(CityStat cs) const {
+        inline RatioType getStat(CityStat cs) const {
             return *m_memberPointers[cs];
         }
 
@@ -177,8 +177,10 @@ namespace QtEpidemy {
            emit the statChanged signal */
         inline void emitAndChangeIfDiff(const RatioType &newVal, RatioType &orig,
                                         const CityStat &cs) {
+
             if(newVal != orig) {
-                CDPR_STAT(newVal, orig);
+//                CDPR_STAT(newVal, orig);
+                CDPR(tr("%1 old %2 new %3").arg(CS_NAMES[cs]).arg(orig).arg(newVal));
                 orig = newVal;
                 emit statChanged(cs);
             }

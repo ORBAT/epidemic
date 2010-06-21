@@ -21,43 +21,6 @@ namespace QtEpidemy {
 
     class MdiSettingsController;
 
-    class AmountTypeScaleDraw : public QwtScaleDraw {
-    public:
-        virtual QwtText label(double v) const {
-            // return a decimal number without the goddamn E notation
-            return QString::number(v,'f',0);
-        }
-    };
-
-    class DateScaleDraw : public QwtScaleDraw {
-    public:
-        DateScaleDraw(const QDateTime &start) : m_start(start) {}
-
-
-        virtual QwtText label(double v) const {
-           /*
-             Time is measured in ticks in-game, and DT days elapse every tick (see
-             constants.h for value). The value that gets passed to label(double) is
-             the amount of ticks elapsed after starting the game.
-
-             v * DT gives the number of DAYS elapsed since starting the game
-
-             Since DT is (currently, anyhow) < 24h, it's best to convert v * DT to
-             seconds. */
-            /**
-              FIXME:
-              This will roll over when v reaches 596523
-              */
-            int secondsElapsed = (v * DT) * 86400; // 24h * 60min * 60sec
-            QDateTime derp = m_start.addSecs(secondsElapsed);
-            return derp.toString("M/dd hh");
-        }
-
-
-    private:
-        QDateTime m_start;
-    };
-
 
     class City;
 
@@ -72,7 +35,7 @@ namespace QtEpidemy {
         ~MdiPlot();
 
     signals:
-        void statVisibilityToggled(CityStats, bool);
+        void statVisibilityToggled(CityStat, bool);
 
     protected:
         void changeEvent(QEvent *e);
@@ -95,7 +58,7 @@ namespace QtEpidemy {
 
         double *m_xAxisData; // the data for the x-axis
 
-        CityStats m_scaleBy; // scale y-axis by this City stat. CS_POPULATION by default
+        CityStat m_scaleBy; // scale y-axis by this City stat. CS_POPULATION by default
 
         /* how many curves there are on the current plot. Basically the same as the number
            of non-null elements in m_yarrayList or m_pcList */
@@ -103,21 +66,23 @@ namespace QtEpidemy {
 
         qint32 m_numDataPoints; // how many data points have been collected so far
 
+        double m_r0RangeTop;
+
 
     public slots:
         /* used to add data to a City stat. Note that this WON'T cause the data to be shown.
            showStatistic() will actually add the curve, and replot() will, well, replot
            everything */
-        void cityStatUpdate(CityStats, AmountType);
-        void changeYScale(CityStats);
+        void cityStatUpdate(CityStat, AmountType);
+        void changeYScale(CityStat);
 
         // shows the curve for the specified statistic
-        void showStatistic(CityStats);
+        void showStatistic(CityStat);
         // hides the curve for a statistic
-        void hideStatistic(CityStats cs);
+        void hideStatistic(CityStat cs);
 
         // calls either showStatistic() or hideStatistic() depending on the bool
-        void setStatVisibility(CityStats cs, bool);
+        void setStatVisibility(CityStat cs, bool);
 
         void replot();
 

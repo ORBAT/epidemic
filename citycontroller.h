@@ -34,6 +34,7 @@ namespace QtEpidemy {
             return m_cities.value(name);
         }
 
+
     signals:
 
 

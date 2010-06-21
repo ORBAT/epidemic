@@ -64,8 +64,6 @@ namespace QtEpidemy {
 
     void City::step() {
 
-//        DPR("start step");
-
         /* calculations of statistics should be done so that total statistics are calculated
            first and daily statistics last */
         calcDead();
@@ -95,9 +93,8 @@ namespace QtEpidemy {
 
     void City::setPathogen(Pathogen *pp) {
         {
-
-            DPR(tr("City name %1, pathogen %2").arg(m_name).arg((quint32)pp));
-
+            //DPR(tr("City name %1, pathogen %2").arg(m_name).arg((quint32)pp));
+            CDPR(tr("Got pathogen %1"));
             if(m_pathogen != NULL) {
                 // disconnect us from all of the previous pathogen's signals
                 disconnect(m_pathogen, 0, this,0);
@@ -107,6 +104,11 @@ namespace QtEpidemy {
         m_pathogen = pp;
         this->connect(m_pathogen, SIGNAL(statChanged(PathogenStat,RatioType)),
                       SLOT(pathogenStatChanged(PathogenStat,RatioType)));
+        for(int i = 0; i < PS_MAX_STATS; ++i) {
+            CDPR(tr("Setting %1 to %2").arg(PS_NAMES[i]).arg(pp->getStat((PathogenStat)i)));
+            pathogenStatChanged((PathogenStat)i, pp->getStat((PathogenStat)i));
+        }
+
 
     }
 
@@ -135,7 +137,8 @@ namespace QtEpidemy {
 //    }
 
     void City::pathogenStatChanged(const PathogenStat &ps, const RatioType &rt) {
-        DPR(tr("%1 stat %2 (%3)").arg(m_name).arg(PS_NAMES[ps]).arg(rt));
+//        DPR(tr("%1 stat %2 (%3)").arg(m_name).arg(PS_NAMES[ps]).arg(rt));
+        CDPR(tr("Pathogen\'s %1 changed to %2").arg(PS_NAMES[ps]).arg(rt));
         switch(ps) {
         case PS_DURATION:
             m_diseaseDuration = rt;

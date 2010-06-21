@@ -15,13 +15,9 @@ namespace QtEpidemy {
         explicit Pathogen(RatioType survival = 1, RatioType infection = 0,
                           RatioType duration = 0, QObject *parent = 0);
 
-        inline const RatioType* getPathogenStats() const {
-            return m_stats;
-        }
+        const RatioType* getPathogenStats() const;
 
-        inline RatioType getPathogenStat(PathogenStat ps) {
-            return m_stats[ps];
-        }
+        RatioType getStat(PathogenStat ps) const;
 
     public slots:
         void setStatistic(PathogenStat,RatioType);
@@ -33,7 +29,7 @@ namespace QtEpidemy {
         void statChanged(PathogenStat, RatioType);
 
     protected:
-        QReadWriteLock lock;
+        mutable QReadWriteLock lock;
 
         /* PS_MAX_STATS in constants.h enum PathogenStats.
 

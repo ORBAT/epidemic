@@ -59,4 +59,20 @@ namespace QtEpidemy {
             break;
         }
     }
+
+
 }
+
+void QtEpidemy::MainWindow::on_actionInfect_city_Derp_triggered()
+{
+    QtEpidemy::City *c = m_cityController->getCity("Derp");
+    QtEpidemy::Pathogen *p = new QtEpidemy::Pathogen(0.99, 0.00002, 10, this);
+    if(c) {
+        c->setPathogen(p);
+        c->addInfected(1);
+    }
+
+
+}
+
+

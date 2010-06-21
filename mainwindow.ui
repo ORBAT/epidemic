@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1122</width>
-    <height>710</height>
+    <width>1120</width>
+    <height>708</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1122</width>
+     <width>1120</width>
      <height>21</height>
     </rect>
    </property>
@@ -36,8 +36,15 @@
     <addaction name="actionStart"/>
     <addaction name="actionPause"/>
    </widget>
+   <widget class="QMenu" name="menuDEBUG">
+    <property name="title">
+     <string>DEBUG</string>
+    </property>
+    <addaction name="actionInfect_city_Derp"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuGame"/>
+   <addaction name="menuDEBUG"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -61,6 +68,11 @@
   <action name="actionPause">
    <property name="text">
     <string>Pause</string>
+   </property>
+  </action>
+  <action name="actionInfect_city_Derp">
+   <property name="text">
+    <string>Infect Derp</string>
    </property>
   </action>
  </widget>

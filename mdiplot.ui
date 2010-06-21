@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>MdiPlot</class>
  <widget class="QWidget" name="MdiPlot">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>424</width>
+    <height>305</height>
+   </rect>
+  </property>
   <property name="minimumSize">
    <size>
     <width>424</width>
@@ -39,13 +47,26 @@
          </property>
          <property name="alarmColor">
           <color>
+           <red>0</red>
+           <green>255</green>
+           <blue>0</blue>
+          </color>
+         </property>
+         <property name="alarmEnabled">
+          <bool>true</bool>
+         </property>
+         <property name="alarmLevel">
+          <double>1.000000000000000</double>
+         </property>
+         <property name="scalePosition">
+          <enum>QwtThermo::RightScale</enum>
+         </property>
+         <property name="fillColor">
+          <color>
            <red>255</red>
            <green>0</green>
            <blue>0</blue>
           </color>
-         </property>
-         <property name="scalePosition">
-          <enum>QwtThermo::RightScale</enum>
          </property>
          <property name="maxValue">
           <double>20.000000000000000</double>

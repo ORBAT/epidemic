@@ -51,11 +51,11 @@ namespace QtEpidemy {
             /* if the sender actually has a "citystat" property. Note that this DOESN'T
                check whether the property is an int or not */
             if(qv.isValid()) {
-                emit qp->checked((CityStats)qv.toInt(), checked);
+                emit qp->checked((CityStat)qv.toInt(), checked);
             }
         }
 
-        void setChecked(CityStats cs, bool state) {
+        void setChecked(CityStat cs, bool state) {
             DPR(tr("Setting %1 to %2").arg(CS_NAMES[cs]).arg(state));
             m_checkboxes.at(cs)->setChecked(state);
         }

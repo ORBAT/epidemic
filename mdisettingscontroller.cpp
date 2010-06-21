@@ -14,7 +14,7 @@ namespace QtEpidemy {
     }
 
 
-    void MdiSettingsController::setChecked(CityStats cs, bool state) {
+    void MdiSettingsController::setChecked(CityStat cs, bool state) {
         pd->setChecked(cs, state);
     }
 

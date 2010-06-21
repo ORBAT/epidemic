@@ -23,11 +23,11 @@ namespace QtEpidemy {
 
     signals:
         // emitted when a checkbox is toggled
-        void checked(CityStats, bool);
+        void checked(CityStat, bool);
 
     public slots:
         // set the checked state of a specific stat's checkbox
-        void setChecked(CityStats, bool state = true);
+        void setChecked(CityStat, bool state = true);
 
 
     private:

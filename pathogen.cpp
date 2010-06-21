@@ -18,7 +18,7 @@ namespace QtEpidemy {
                 .arg(survivalR).arg(contactR).arg(duration);
     }
 
-    void Pathogen::setStatistic(PathogenStats ps, RatioType rt) {
+    void Pathogen::setStatistic(PathogenStat ps, RatioType rt) {
         qDebug() << "Pathogen::setStatistic() ps" << ps << "rt" << rt;
         clampToZero<RatioType>(rt);
         QWriteLocker locker(&lock);
@@ -31,8 +31,18 @@ namespace QtEpidemy {
         qDebug() << "Pathogen::forceStatEmit()";
         QReadLocker locker(&lock);
         for(int i = 0; i < PS_MAX_STATS; ++i) {
-            emit statChanged((PathogenStats)i, m_stats[i]);
+            emit statChanged((PathogenStat)i, m_stats[i]);
         }
+    }
+
+    const RatioType* Pathogen::getPathogenStats() const {
+        QReadLocker locker(&lock);
+        return m_stats;
+    }
+
+    RatioType Pathogen::getStat(PathogenStat ps) const {
+        QReadLocker locker(&lock);
+        return m_stats[ps];
     }
 
 }

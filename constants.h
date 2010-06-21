@@ -27,11 +27,11 @@ namespace QtEpidemy {
 #define CDPR(message) debugPr(Q_FUNC_INFO, m_name % ": " % message)
 #define CDPR_STAT(newstat, oldstat) CDPR(tr("%1 (old %2)").arg(newstat).arg(oldstat));
 
-    enum PathogenStats { PS_SURVIVALRATE, PS_CONTACTRATE, PS_DURATION, PS_MAX_STATS };
+    enum PathogenStat { PS_SURVIVALRATE, PS_CONTACTRATE, PS_DURATION, PS_MAX_STATS };
     const QString PS_NAMES[] = {QT_TR_NOOP("PS_SURVIVALRATE"), QT_TR_NOOP("PS_CONTACTRATE"),
                                 QT_TR_NOOP("PS_DURATION"), QT_TR_NOOP("PS_MAX_STATS")};
 
-    enum CityStats { CS_D_INF_DEATHS, CS_D_QUAR_DEATHS, CS_D_INF_RECOVER, CS_D_QUAR_RECOVER,
+    enum CityStat { CS_D_INF_DEATHS, CS_D_QUAR_DEATHS, CS_D_INF_RECOVER, CS_D_QUAR_RECOVER,
                      CS_D_INFECTIONS, CS_D_QUARANTINES, CS_SUSCEPTIBLE, CS_INFECTED,
                      CS_RECOVERED, CS_DEAD, CS_QUARANTINED, CS_QUAR_RATE, CS_POPULATION, CS_MAX_STATS};
 

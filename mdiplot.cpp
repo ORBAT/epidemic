@@ -7,6 +7,7 @@
 #include <qwt_scale_widget.h>
 #include <qwt_legend.h>
 #include <qwt_legend_item.h>
+#include <qwt_scale_engine.h>
 #include "mdiplot.h"
 #include "ui_mdiplot.h"
 #include "city.h"
@@ -14,6 +15,49 @@
 #include "pathogen.h"
 
 namespace QtEpidemy {
+
+    class AmountTypeScaleDraw : public QwtScaleDraw {
+    public:
+        virtual QwtText label(double v) const {
+            // return a decimal number without the goddamn E notation
+            return QString::number(v,'f',0);
+        }
+    };
+
+    class RatioTypeScaleDraw : public QwtScaleDraw {
+    public:
+        virtual QwtText label(double v) const {
+            return QString::number(v,'f',2);
+        }
+    };
+
+    class DateScaleDraw : public QwtScaleDraw {
+    public:
+        DateScaleDraw(const QDateTime &start) : m_start(start) {}
+
+
+        virtual QwtText label(double v) const {
+           /*
+             Time is measured in ticks in-game, and DT days elapse every tick (see
+             constants.h for value). The value that gets passed to label(double) is
+             the amount of ticks elapsed after starting the game.
+
+             v * DT gives the number of DAYS elapsed since starting the game
+
+             Since DT is (currently, anyhow) < 24h, it's best to convert v * DT to
+             seconds. */
+            /**
+              FIXME:
+              This will roll over when v reaches 596523
+              */
+            int secondsElapsed = (v * DT) * 86400; // 24h * 60min * 60sec
+            QDateTime derp = m_start.addSecs(secondsElapsed);
+            return derp.toString("M/dd hh");
+        }
+
+    private:
+        QDateTime m_start;
+    };
 
     MdiPlot::MdiPlot(City *c, int plotSize, const QDateTime &start, QWidget *parent) :
             QWidget(parent),
@@ -23,6 +67,7 @@ namespace QtEpidemy {
             m_scaleBy(CS_POPULATION),
             m_numCurves(0),
             m_numDataPoints(0),
+            m_r0RangeTop(1),
             ui(new Ui::MdiPlot)
     {
 
@@ -35,11 +80,11 @@ namespace QtEpidemy {
                                                          ui->settingsTab, this);
 
 
-        this->connect(m_settingsController, SIGNAL(checked(CityStats,bool)),
-                      SLOT(setStatVisibility(CityStats,bool)));
+        this->connect(m_settingsController, SIGNAL(checked(CityStat,bool)),
+                      SLOT(setStatVisibility(CityStat,bool)));
 
-        m_settingsController->connect(this, SIGNAL(statVisibilityToggled(CityStats,bool)),
-                                      SLOT(setChecked(CityStats,bool)));
+        m_settingsController->connect(this, SIGNAL(statVisibilityToggled(CityStat,bool)),
+                                      SLOT(setChecked(CityStat,bool)));
 
 
         for(int i = 0; i < m_plotSize; ++i) {
@@ -70,8 +115,11 @@ namespace QtEpidemy {
 
 //        m_qwtPlot->plotLayout()->setAlignCanvasToScales(true);
 
-        m_qwtPlot->setAxisScaleDraw(QwtPlot::yLeft, new AmountTypeScaleDraw());
+        m_qwtPlot->setAxisScaleDraw(QwtPlot::yLeft, new RatioTypeScaleDraw());
         m_qwtPlot->setAxisScaleDraw(QwtPlot::xBottom, new DateScaleDraw(start));
+        m_qwtPlot->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
+        m_qwtPlot->setAxisMaxMajor(QwtPlot::yLeft, 10);
+        m_qwtPlot->setAxisScale(QwtPlot::yLeft, 1, c->getStat(CS_POPULATION));
 
         m_qwtPlot->setAxisScale(QwtPlot::xBottom, 0, m_plotSize);
         m_qwtPlot->setAxisLabelRotation(QwtPlot::xBottom, -75.0);
@@ -95,8 +143,14 @@ namespace QtEpidemy {
         this->connect(m_city, SIGNAL(stepped()), SLOT(replot()));
 //        this->connect(this, SIGNAL(destroyed()), SLOT(deleteCurveData()));
 
-        this->connect(m_city, SIGNAL(statUpdate(CityStats,AmountType)),
-                      SLOT(cityStatUpdate(CityStats,AmountType)));
+        this->connect(m_city, SIGNAL(statUpdate(CityStat,AmountType)),
+                      SLOT(cityStatUpdate(CityStat,AmountType)));
+
+
+        ui->qwtThermo->setScaleMaxMinor(5);
+        ui->qwtThermo->setScaleDraw(new RatioTypeScaleDraw);
+        ui->qwtThermo->setRange(0, m_r0RangeTop);
+
 
     }
 
@@ -109,12 +163,13 @@ namespace QtEpidemy {
 
     }
 
-    void MdiPlot::cityStatUpdate(CityStats cs, AmountType at) {
+    void MdiPlot::cityStatUpdate(CityStat cs, AmountType at) {
 
         if(cs == m_scaleBy) {
         // only change scale if the value of the stat has changed
-            if(m_curveData[cs].curvePoints[0] != at)
-                m_qwtPlot->setAxisScale(QwtPlot::yLeft, 0, at);
+            if(m_curveData[cs].curvePoints[0] != at) {
+                m_qwtPlot->setAxisScale(QwtPlot::yLeft, 1, at);
+            }
         }
 
 #ifdef QT_DEBUG
@@ -132,11 +187,11 @@ namespace QtEpidemy {
 
     }
 
-    void MdiPlot::changeYScale(CityStats cs) {
+    void MdiPlot::changeYScale(CityStat cs) {
         m_scaleBy = cs;
     }
 
-    void MdiPlot::showStatistic(CityStats cs) {
+    void MdiPlot::showStatistic(CityStat cs) {
         emit statVisibilityToggled(cs,true);
         // if m_curveData has a pointer for this stat, it's already being displayed
         if(m_curveData[cs].curve) {
@@ -181,7 +236,7 @@ namespace QtEpidemy {
         ++m_numCurves;
     }
 
-    void MdiPlot::hideStatistic(CityStats cs) {
+    void MdiPlot::hideStatistic(CityStat cs) {
         emit statVisibilityToggled(cs,false);
         DPR(tr("Hiding %1").arg(CS_NAMES[cs]));
         QwtPlotCurve *&item = m_curveData[cs].curve;
@@ -218,14 +273,27 @@ namespace QtEpidemy {
                                                  m_numDataPoints);
         }
 
-        // calculate the basic reproduction number of the disease R_0 in this city
-        // TODO FIXME DERP HUR
-//        m_city->getPathogen()->getPathogenStat(PS_CONTACTRATE) * m_city->g;
+        /* calculate the basic reproduction number of the disease R_0 in this city.
+           R_0 indicates how many people an infected person can infect.
+           When it is over 1, the disease is endemic, ie. it will be  maintained in the
+           population without the need for external inputs
+         */
+        const Pathogen *p = m_city->getPathogen();
+        if(p) {
+            RatioType r0 = (p->getStat(PS_CONTACTRATE) *
+                            m_city->getStat(CS_POPULATION)) / p->getStat(PS_DURATION);
+            if(r0 > m_r0RangeTop) {
+                m_r0RangeTop = r0*1.5;
+                ui->qwtThermo->setMaxValue(r0*m_r0RangeTop);
+            }
+            ui->qwtThermo->setValue((double)r0);
+
+        }
 
         m_qwtPlot->replot();
     }
 
-    void MdiPlot::setStatVisibility(CityStats cs, bool visible) {
+    void MdiPlot::setStatVisibility(CityStat cs, bool visible) {
         DPR(tr("%1 to %2").arg(CS_NAMES[cs]).arg(visible));
 
         if(visible)

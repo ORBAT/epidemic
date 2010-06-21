@@ -35,6 +35,9 @@ namespace QtEpidemy {
 
     private:
         Ui::MainWindow *ui;
-    };
+
+private slots:
+    void on_actionInfect_city_Derp_triggered();
+};
 }
 #endif // MAINWINDOW_H
