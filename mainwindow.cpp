@@ -1,3 +1,4 @@
+#include <ctime>
 #include <QDebug>
 #include <QTimer>
 #include <QDateTime>
@@ -7,6 +8,7 @@
 #include "pathogen.h"
 #include "mdiplot.h"
 #include "citycontroller.h"
+
 
 
 namespace QtEpidemy {
@@ -39,6 +41,8 @@ namespace QtEpidemy {
     void MainWindow::additionalUiSetup() {
         this->setWindowState(Qt::WindowMaximized);
         ui->tblCityData->setModel(m_cityController->getModel());
+//        ui->tblCityData->horizontalHeader()->
+//                setResizeMode(QHeaderView::ResizeToContents);
     }
 
     MainWindow::~MainWindow()
@@ -63,7 +67,7 @@ namespace QtEpidemy {
 
 void QtEpidemy::MainWindow::on_actionInfect_city_Derp_triggered()
 {
-    QtEpidemy::City *c = m_cityController->getCity("Derp");
+    QtEpidemy::City *c = m_cityController->getCities().at(0);
     QtEpidemy::Pathogen *p = new QtEpidemy::Pathogen(0.99, 0.00002, 10, this);
     if(c) {
         c->setPathogen(p);
@@ -74,3 +78,13 @@ void QtEpidemy::MainWindow::on_actionInfect_city_Derp_triggered()
 }
 
 
+
+void QtEpidemy::MainWindow::on_actionAdd_random_city_triggered()
+{
+    qsrand(time(NULL));
+    QString cityName = QString("%1CityName").arg(time(NULL), 0, 16);
+    int pop = qrand()%100000000;
+    qreal x = qrand()%100;
+    qreal y = qrand()%100;
+    m_cityController->createCity(cityName, pop, QPointF(x,y));
+}

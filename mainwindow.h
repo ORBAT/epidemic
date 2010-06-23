@@ -36,6 +36,7 @@ namespace QtEpidemy {
         Ui::MainWindow *ui;
 
 private slots:
+    void on_actionAdd_random_city_triggered();
     void on_actionInfect_city_Derp_triggered();
 };
 }

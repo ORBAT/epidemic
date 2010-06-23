@@ -13,8 +13,6 @@ namespace QtEpidemy {
     }
 
     int CityTableModel::rowCount(const QModelIndex &parent) const {
-        Q_UNUSED(parent);
-
         /* Qt docs for QAbstractItemModel:
                "Note: When implementing a table based model, columnCount() should
                return 0 when the parent is valid." */
@@ -37,23 +35,24 @@ namespace QtEpidemy {
     }
 
     QVariant CityTableModel::data(const QModelIndex &index, int role) const {
-        DPR(tr("%1:%2 with role %3").arg(index.row()).arg(index.column()).arg(role));
+//        DPR(tr("%1:%2 with role %3").arg(index.row()).arg(index.column()).arg(role));
         if(!index.isValid())
             return QVariant();
         int row = index.row();
-        if(row >= m_cityDataIndex.size())
+        if(row >= m_cityDataIndex.size()) {
+            DPR(tr("Someone wanted row %1, when max is %2").arg(row).arg(m_cityDataIndex.size()));
             return QVariant();
+        }
 
         if(role == Qt::DisplayRole) {
-
             int col = index.column();
             switch(col) {
             case 0: // name
                 return m_cityDataIndex.at(row)->getName();
             case 1: // population
-                return m_cityDataIndex.at(row)->getStat(CS_POPULATION);
+                return QLocale::system().toString(m_cityDataIndex.at(row)->getStat(CS_POPULATION));
             case 2: // infected
-                return m_cityDataIndex.at(row)->getStat(CS_INFECTED);
+                return QLocale::system().toString(m_cityDataIndex.at(row)->getStat(CS_INFECTED));
             default:
                 return QVariant();
             }
@@ -76,9 +75,12 @@ namespace QtEpidemy {
             default:
                 return QVariant();
             }
-        } else { // Qt::Vertical
-            return section+1;
-        }
+        } /*else { // Qt::Vertical
+            if(section < m_cityDataIndex.size())
+                return section+1;
+            else
+                return QVariant();
+        }*/
 
     }
 
@@ -90,13 +92,12 @@ namespace QtEpidemy {
         DPR(tr("Adding %1 to model").arg(c->getName()));
 
         int idxOfNewCity = m_cityDataIndex.size();
-
+        beginInsertRows(QModelIndex(), idxOfNewCity,idxOfNewCity+1);
         m_cityDataIndex.append(c);
+        endInsertRows();
         connect(c, SIGNAL(statChanged(CityStat,AmountType)),
                 SLOT(statUpdated(CityStat,AmountType)));
 
-        emit dataChanged(this->index(idxOfNewCity,0),
-                         this->index(idxOfNewCity,m_numColumns));
     }
 
     void CityTableModel::statUpdated(CityStat cs, AmountType at) {
@@ -123,7 +124,6 @@ namespace QtEpidemy {
             default:
                 break;
             }
-
         }
     }
 }
