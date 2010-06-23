@@ -35,16 +35,16 @@ namespace QtEpidemy {
     }
 
     QVariant CityTableModel::data(const QModelIndex &index, int role) const {
-//        DPR(tr("%1:%2 with role %3").arg(index.row()).arg(index.column()).arg(role));
         if(!index.isValid())
             return QVariant();
         int row = index.row();
-        if(row >= m_cityDataIndex.size()) {
-            DPR(tr("Someone wanted row %1, when max is %2").arg(row).arg(m_cityDataIndex.size()));
+
+        if(row >= m_cityDataIndex.size())
             return QVariant();
-        }
+
 
         if(role == Qt::DisplayRole) {
+            DPR(tr("Data wanted for row %1").arg(row));
             int col = index.column();
             switch(col) {
             case 0: // name
@@ -92,7 +92,7 @@ namespace QtEpidemy {
         DPR(tr("Adding %1 to model").arg(c->getName()));
 
         int idxOfNewCity = m_cityDataIndex.size();
-        beginInsertRows(QModelIndex(), idxOfNewCity,idxOfNewCity+1);
+        beginInsertRows(QModelIndex(), idxOfNewCity,idxOfNewCity);
         m_cityDataIndex.append(c);
         endInsertRows();
         connect(c, SIGNAL(statChanged(CityStat,AmountType)),

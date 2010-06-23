@@ -43,7 +43,7 @@ namespace QtEpidemy {
             return m_pathogen;
         }
 
-        inline RatioType getStat(CityStat cs) const {
+        inline AmountType getStat(CityStat cs) const {
             return *m_memberPointers[cs];
         }
 
