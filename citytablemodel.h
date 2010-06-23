@@ -30,7 +30,7 @@ namespace QtEpidemy {
         //////////////////////////
 
     public slots:
-        virtual void addCity(City* c, const QString&);
+        virtual void addCity(City* c);
         // receives updates from City instances
         virtual void statUpdated(CityStat, AmountType);
 

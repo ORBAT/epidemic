@@ -4,16 +4,21 @@
 #include "citycontroller.h"
 
 
+
 namespace QtEpidemy {
 
 
 
     CityController::CityController(QObject *parent) :
             QObject(parent), m_stepTimer(new QTimer(this)), m_stepDelay(300),
-            m_ticks(0)
+            m_ticks(0), m_tableModel(new CityTableModel(this))
     {
         connect(m_stepTimer, SIGNAL(timeout()), this, SLOT(step()));
+
+        connect(this, SIGNAL(cityAdded(City*)), m_tableModel,
+                SLOT(addCity(City*)));
     }
+
 
     CityController::~CityController() {
         m_stepTimer->stop();
@@ -32,13 +37,14 @@ namespace QtEpidemy {
                    "Trying to insert a city with duplicate name");
 
         m_cities[name] = c;
-        emit cityAdded(name);
+        emit cityAdded(c);
+
     }
 
     void CityController::removeCity(const QString &name) {
-        if(m_cities.remove(name)) { // ie. QHash::remove() returns anything but 0
-            emit cityRemoved(name);
-        }
+        City *c = m_cities.take(name);
+        if(c)  // ie. QHash::take() returns anything but 0
+            emit cityRemoved(c);
     }
 
     void CityController::start() {
@@ -57,12 +63,14 @@ namespace QtEpidemy {
     }
 
     void CityController::step() {
+        DPR(tr("%1\n\n").arg(m_ticks));
         QHash<QString,City*>::iterator it;
         QHash<QString,City*>::iterator end = m_cities.end();
         for(it = m_cities.begin(); it != end; ++it) {
             it.value()->step();
         }
         ++m_ticks;
+
     }
 
 }

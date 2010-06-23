@@ -14,11 +14,16 @@ namespace QtEpidemy {
 
     int CityTableModel::rowCount(const QModelIndex &parent) const {
         Q_UNUSED(parent);
+
         /* Qt docs for QAbstractItemModel:
                "Note: When implementing a table based model, columnCount() should
                return 0 when the parent is valid." */
-        if(parent.isValid())
+        DPR(tr("Row count currently %1").arg(m_cityDataIndex.size()));
+        if(parent.isValid()) {
+            DPR("Parent valid");
             return 0;
+        }
+
         return m_cityDataIndex.size();
     }
 
@@ -32,13 +37,15 @@ namespace QtEpidemy {
     }
 
     QVariant CityTableModel::data(const QModelIndex &index, int role) const {
+        DPR(tr("%1:%2 with role %3").arg(index.row()).arg(index.column()).arg(role));
         if(!index.isValid())
             return QVariant();
-        if(index.row() >= m_cityDataIndex.size())
+        int row = index.row();
+        if(row >= m_cityDataIndex.size())
             return QVariant();
 
         if(role == Qt::DisplayRole) {
-            int row = index.row();
+
             int col = index.column();
             switch(col) {
             case 0: // name
@@ -50,10 +57,11 @@ namespace QtEpidemy {
             default:
                 return QVariant();
             }
-        }
+        } else
+            return QVariant(); // all other roles
     }
 
-    QVariant headerData(int section, Qt::Orientation orientation,
+    QVariant CityTableModel::headerData(int section, Qt::Orientation orientation,
                         int role) const {
         if(role != Qt::DisplayRole)
             return QVariant();
@@ -62,9 +70,9 @@ namespace QtEpidemy {
             case 0:
                 return tr("Name");
             case 1:
-                return tr(CS_NAMES[CS_POPULATION]);
+                return CS_NAMES[CS_POPULATION];
             case 2:
-                return tr(CS_NAMES[CS_INFECTED]);
+                return CS_NAMES[CS_INFECTED];
             default:
                 return QVariant();
             }
@@ -78,16 +86,44 @@ namespace QtEpidemy {
     //// SLOTS
     //////////
 
-    void CityTableModel::addCity(City *c, const QString& name) {
+    void CityTableModel::addCity(City* c) {
+        DPR(tr("Adding %1 to model").arg(c->getName()));
+
+        int idxOfNewCity = m_cityDataIndex.size();
+
         m_cityDataIndex.append(c);
         connect(c, SIGNAL(statChanged(CityStat,AmountType)),
                 SLOT(statUpdated(CityStat,AmountType)));
+
+        emit dataChanged(this->index(idxOfNewCity,0),
+                         this->index(idxOfNewCity,m_numColumns));
     }
 
     void CityTableModel::statUpdated(CityStat cs, AmountType at) {
         Q_UNUSED(cs);
         Q_UNUSED(at);
-        emit dataChanged(/*TODO*/);
-    }
+        City* c = qobject_cast<City*>(sender());
+//        DPR(tr("%1 stat %2 changed to %3").arg(c->getName()).arg(CS_NAMES[cs]).arg(at));
+        /* if the sender wasn't a City, we can forget about searching for it
+           in our index */
+        int row = c ? m_cityDataIndex.indexOf(c) : -1;
 
+        if(row != -1) { /* if the sender was a City and the City was found in
+                           the index */
+            QModelIndex i;
+            switch(cs) {
+            case CS_POPULATION:
+                i = this->index(row, 1);
+                emit dataChanged(i,i);
+                break;
+            case CS_INFECTED:
+                i = this->index(row, 2);
+                emit dataChanged(i,i);
+                break;
+            default:
+                break;
+            }
+
+        }
+    }
 }

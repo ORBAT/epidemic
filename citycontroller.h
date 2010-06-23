@@ -5,6 +5,8 @@
 #include <QList>
 #include <QHash>
 #include <QStringList>
+#include <QAbstractItemModel>
+#include "citytablemodel.h"
 
 #include "constants.h"
 
@@ -14,6 +16,7 @@ class QPointF;
 namespace QtEpidemy {
 
     class City;
+    class CityTableModel;
 
     class CityController : public QObject
     {
@@ -42,10 +45,14 @@ namespace QtEpidemy {
             return m_cities.values();
         }
 
+        inline QAbstractItemModel* getModel() const {
+            return static_cast<QAbstractItemModel*>(m_tableModel);
+        }
+
 
     signals:
-        void cityAdded(const QString&);
-        void cityRemoved(const QString&);
+        void cityAdded(City*);
+        void cityRemoved(City*);
 
         //// SLOTS
         //////////
@@ -76,6 +83,7 @@ namespace QtEpidemy {
         // how many ticks have elapsed
         quint32 m_ticks;
 
+        CityTableModel *m_tableModel;
 
     };
 

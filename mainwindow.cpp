@@ -38,6 +38,7 @@ namespace QtEpidemy {
 
     void MainWindow::additionalUiSetup() {
         this->setWindowState(Qt::WindowMaximized);
+        ui->tblCityData->setModel(m_cityController->getModel());
     }
 
     MainWindow::~MainWindow()

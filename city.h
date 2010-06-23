@@ -53,6 +53,8 @@ namespace QtEpidemy {
         }
 
 
+        //// SIGNALS
+        ////////////
     signals:
         // announce the city's daily status
         void statUpdate(CityStat, AmountType);
@@ -273,7 +275,7 @@ namespace QtEpidemy {
                                       m_dailyQuarantinedRecoveries) * DT);
 
             }
-            emitAndChangeIfDiff(val,m_recovered, CS_INFECTED);
+            emitAndChangeIfDiff(val,m_recovered, CS_RECOVERED);
         }
 
         inline void calcDead() {
