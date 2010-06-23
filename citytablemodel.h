@@ -7,20 +7,15 @@
 
 namespace QtEpidemy {
 
-    struct CityData {
-        QScopedArrayPointer<AmountType> stats;
-        CityData() : stats(new AmountType[CS_MAX_STATS]) {
-            for(int i = 0; i < CS_MAX_STATS; ++i) {
-                stats[i] = 0;
-            }
-        }
-    };
+    class City;
 
     class CityTableModel : public QAbstractTableModel
     {
         Q_OBJECT
     public:
         CityTableModel(QObject *parent = 0);
+        ~CityTableModel();
+
         /*
     When subclassing QAbstractTableModel, you must implement rowCount(), columnCount(),
     and data(). Default implementations of the index() and parent() functions are provided by
@@ -30,11 +25,18 @@ namespace QtEpidemy {
         virtual int rowCount(const QModelIndex &parent) const;
         virtual int columnCount(const QModelIndex &parent) const;
         virtual QVariant data(const QModelIndex &index, int role) const;
+        virtual QVariant headerData(int section, Qt::Orientation orientation,
+                                    int role) const;
         //////////////////////////
 
+    public slots:
+        virtual void addCity(City* c, const QString&);
+        // receives updates from City instances
+        virtual void statUpdated(CityStat, AmountType);
+
     protected:
-        QScopedPointer< QHash<QString, CityData> > m_cityData;
-        qint8 m_numColumns; // defaults to name,population,infected
+        QList<City*> m_cityDataIndex;
+        qint8 m_numColumns; // name,population,infected currently
 
     };
 

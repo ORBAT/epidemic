@@ -34,6 +34,7 @@ namespace QtEpidemy {
 
         ~City();
 
+        // thread-safe since m_position is immutable
         inline const QPointF getPosition() const {
             return m_position;
         }
@@ -46,27 +47,16 @@ namespace QtEpidemy {
             return *m_memberPointers[cs];
         }
 
+        // thread-safe since m_name is immutable
+        inline QString getName() const {
+            return m_name;
+        }
+
 
     signals:
         // announce the city's daily status
-
-
-        void dailyInfectedDeaths(AmountType);
-        void dailyQuarantinedDeaths(AmountType);
-        void dailyInfectedRecoveries(AmountType);
-        void dailyQuarantinedRecoveries(AmountType);
-        void dailyInfections(AmountType);
-        void dailyQuarantines(AmountType);
-
-        void susceptible(AmountType);
-        void infected(AmountType);
-        void recovered(AmountType);
-        void dead(AmountType);
-        void quarantined(AmountType);
-        void quarantineRate(AmountType);
-        void population(AmountType);
-
         void statUpdate(CityStat, AmountType);
+        // only emitted if a stat actually changes
         void statChanged(CityStat, AmountType);
 
         void stepped();
