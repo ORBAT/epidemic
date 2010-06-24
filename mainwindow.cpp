@@ -24,11 +24,17 @@ namespace QtEpidemy {
         additionalUiSetup();
 
         CityController* m_cityController = m_world->getCityController();
-        m_cityController->createCity("Derp", 100000, QPointF(42.0,42.0));
+        m_cityController->createCity("Derp", 7000000, QPointF(42.0,42.0));
         City *c = m_cityController->getCity("Derp");
         MdiPlot *mp = NULL;
         if(c) {
             mp = new MdiPlot(c, 100, QDateTime::currentDateTime());
+            mp->showStatistic(CS_INFECTED);
+            mp->showStatistic(CS_RECOVERED);
+            mp->showStatistic(CS_D_INFECTIONS);
+            mp->showStatistic(CS_D_INF_DEATHS);
+            mp->showStatistic(CS_D_INF_RECOVER);
+
             ui->centralWidget->addSubWindow(mp, Qt::SubWindow);
         }
         connectActions();
@@ -73,13 +79,12 @@ void QtEpidemy::MainWindow::on_actionInfect_city_Derp_triggered()
     QtEpidemy::City *c = m_cityController->
                          getCities()
                          .at(qrand()%m_cityController->getCities().size());
-    QtEpidemy::Pathogen *p = new QtEpidemy::Pathogen(0.99, 0.00002, 10, this);
+    QtEpidemy::Pathogen *p = new QtEpidemy::Pathogen(0.99, 0.0000001, 10, 0.05,
+                                                     this);
     if(c) {
         c->setPathogen(p);
         c->addInfected(1);
     }
-
-
 }
 
 

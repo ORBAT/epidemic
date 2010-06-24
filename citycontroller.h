@@ -18,6 +18,10 @@ namespace QtEpidemy {
     class City;
     class CityTableModel;
 
+    /**
+      This class is in charge of all City-related stuff, like adding and
+      removing cities and calling City::step() when needed.
+    */
     class CityController : public QObject
     {
         Q_OBJECT

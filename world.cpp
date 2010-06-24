@@ -9,7 +9,7 @@ namespace QtEpidemy {
             m_ticks(0), m_stepTimer(new QTimer(this))
     {
         // have CityController run each City's step() when the timer fires
-        connect(m_stepTimer, SIGNAL(timeout()), m_cityController, SLOT(step()));
+        connect(m_stepTimer, SIGNAL(timeout()), this, SLOT(step()));
     }
 
     World::~World() {
@@ -30,6 +30,13 @@ namespace QtEpidemy {
     void World::pause() {
         DPR("Pausing");
         m_stepTimer->stop();
+    }
+
+    void World::step() {
+        DPR(tr("%1").arg(m_ticks));
+        qDebug("\n\n");
+        m_cityController->step();
+        ++m_ticks;
     }
 
 }

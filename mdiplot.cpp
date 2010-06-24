@@ -20,7 +20,8 @@ namespace QtEpidemy {
     public:
         QwtText label(double v) const {
             // return a decimal number without the goddamn E notation
-            return QString::number(v,'f',0);
+            return QLocale::system().toString((AmountType)v);
+//            return QString::number(v,'f',0);
         }
     };
 
@@ -115,10 +116,11 @@ namespace QtEpidemy {
 
 //        m_qwtPlot->plotLayout()->setAlignCanvasToScales(true);
 
-        m_qwtPlot->setAxisScaleDraw(QwtPlot::yLeft, new RatioTypeScaleDraw());
+        m_qwtPlot->setAxisScaleDraw(QwtPlot::yLeft, new AmountTypeScaleDraw());
         m_qwtPlot->setAxisScaleDraw(QwtPlot::xBottom, new DateScaleDraw(start));
         m_qwtPlot->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
-        m_qwtPlot->setAxisMaxMajor(QwtPlot::yLeft, 10);
+//        m_qwtPlot->setAxisMaxMajor(QwtPlot::yLeft, 10);
+        m_qwtPlot->setAxisMaxMinor(QwtPlot::yLeft, 2);
         m_qwtPlot->setAxisScale(QwtPlot::yLeft, 1, c->getStat(CS_POPULATION));
 
         m_qwtPlot->setAxisScale(QwtPlot::xBottom, 0, m_plotSize);

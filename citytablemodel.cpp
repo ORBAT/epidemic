@@ -16,9 +16,9 @@ namespace QtEpidemy {
         /* Qt docs for QAbstractItemModel:
                "Note: When implementing a table based model, columnCount() should
                return 0 when the parent is valid." */
-        DPR(tr("Row count currently %1").arg(m_cityDataIndex.size()));
+//        DPR(tr("Row count currently %1").arg(m_cityDataIndex.size()));
         if(parent.isValid()) {
-            DPR("Parent valid");
+            DPR("Parent valid??");
             return 0;
         }
 
@@ -44,7 +44,7 @@ namespace QtEpidemy {
 
 
         if(role == Qt::DisplayRole) {
-            DPR(tr("Data wanted for row %1").arg(row));
+//            DPR(tr("Data wanted for row %1").arg(row));
             int col = index.column();
             switch(col) {
             case 0: // name

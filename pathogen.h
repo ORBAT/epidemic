@@ -13,7 +13,8 @@ namespace QtEpidemy {
         Q_OBJECT
     public:
         explicit Pathogen(RatioType survival = 1, RatioType infection = 0,
-                          RatioType duration = 0, QObject *parent = 0);
+                          RatioType duration = 0, RatioType immLoss = 0,
+                          QObject *parent = 0);
 
         const RatioType* getPathogenStats() const;
 
@@ -34,12 +35,17 @@ namespace QtEpidemy {
         /* PS_MAX_STATS in constants.h enum PathogenStats.
 
            The current statistics are as follows:
-           PS_CONTACTRATE   contact rate, ie. the probability of getting the disease when in
-                            contact with an infected person.
+           PS_CONTACTRATE       contact rate, ie. the probability of getting the
+                                disease when in contact with an infected person.
 
-           PS_DURATION      duration of the disease in days
+           PS_DURATION          duration of the disease in days
 
-           PS_SURVIVALRATE  survival rate, ie. the probability of surviving once infected
+           PS_SURVIVALRATE      survival rate, ie. the probability of surviving
+                                once infected
+
+           PS_IMMUNITYLOSSRATE  average loss of immunity rate for recovered
+                                individuals
+
            */
         RatioType m_stats[PS_MAX_STATS];
 

@@ -47,6 +47,8 @@ namespace QtEpidemy {
         // changes the delay between steps
         void changeStepDelay(int);
 
+        void step();
+
 
 
     protected:

@@ -42,14 +42,11 @@ namespace QtEpidemy {
 
 
     void CityController::step() {
-//        DPR(tr("%1\n\n").arg(m_ticks));
         QHash<QString,City*>::iterator it;
         QHash<QString,City*>::iterator end = m_cities.end();
         for(it = m_cities.begin(); it != end; ++it) {
             it.value()->step();
         }
-//        ++m_ticks;
-
     }
 
 }

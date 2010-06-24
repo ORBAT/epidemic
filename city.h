@@ -75,18 +75,23 @@ namespace QtEpidemy {
 
         const QString m_name;
 
-        // City-specific bonuses (can be positive OR negative) to some stats + quarantine rate
+        // City-specific bonuses (can be positive OR negative) to some stats
         RatioType m_bonusDuration;
         RatioType m_bonusInfectionRate;
         RatioType m_bonusSurvivalRate;
+        RatioType m_bonusImmunityLoss;
 
-        RatioType m_quarantineRate;  /* PERCENTAGE (0-100) of infected who are
-                                         quarantined daily */
+        RatioType m_quarantineRate;  /* probability of an infected getting
+                                        quarantined */
 
 
-        RatioType m_survivalRate;    // percentage of infected who survive (0-1)
-        RatioType m_infectionRate;   // percentage of susceptible infected daily (0-1)
+        /*
+         We get these from the Pathogen. They're just stored here for
+         faster access */
+        RatioType m_survivalRate;    // probability of survival (0-1)
+        RatioType m_contactRate;     // probability of infection (0-1)
         RatioType m_diseaseDuration; // duration of the disease in days (>0)
+        RatioType m_immunityLossRate;// avg. recovered loss of immunity rate (0-1)
 
 
         // infected * (1 - survival_rate) / disease_duration
@@ -101,6 +106,10 @@ namespace QtEpidemy {
         // quarantined * survival_rate / disease_duration
         RatioType m_dailyQuarantinedRecoveries;// amount of quarantined who recover daily
 
+        // recovered * m_immunityLossRate
+        RatioType m_dailyImmunityLoss; // amount of recovered who lose immunity daily
+
+
 
         // infected * susceptible * infection_rate
         RatioType m_dailyInfections;   // amount of daily infections
@@ -108,7 +117,8 @@ namespace QtEpidemy {
         // infected * quarantine_rate
         RatioType m_dailyQuarantines;  // amount of people quarantined daily
 
-        // susceptible(t) = susceptible(t - dt) + (-daily_infections) * dt
+        /* susceptible(t) = susceptible(t - dt) - daily_infections +
+           dailyImmunityLoss * dt */
         RatioType m_susceptible;        // amount of people susceptible to the disease
 
         /* population(t) = susceptible(t) + infected(t) + quarantined(t) + recovered(t) +
@@ -121,9 +131,9 @@ namespace QtEpidemy {
         RatioType m_infected;         // amount of peolpe who are infected
 
         /* recovered(t) = recovered(t - dt) + (daily_infected_recoveries +
-       daily_quarantined_recoveries) * dt */
-        RatioType m_recovered;          /* amount of people who have recovered or are
-                                          otherwise resistant */
+       daily_quarantined_recoveries - dailyImmunityLoss) * dt */
+        RatioType m_recovered;          /* amount of people who have recovered.
+                                           Recovered people are always immune.*/
 
         /* dead(t) = dead(t - dt) + (daily_infected_deaths +
            daily_quarantined_deaths) * dt */
@@ -137,6 +147,8 @@ namespace QtEpidemy {
         /* pointers to all the member variables. This can be used to make setting/getting
            statistics easier (no need for a bazillion setter/getter functions, slots etc */
         QVarLengthArray<RatioType*, (int)CS_MAX_STATS> m_memberPointers;
+        // same as above but for Pathogens.
+        QVarLengthArray<RatioType*, (int)PS_MAX_STATS> m_pathStatPointers;
 
         const QPointF m_position;
 
@@ -219,7 +231,7 @@ namespace QtEpidemy {
             RatioType val = 0;
 
             if(m_infected != 0 &&  m_susceptible != 0) {
-                val = m_infected * m_susceptible * m_infectionRate;
+                val = m_infected * m_susceptible * m_contactRate;
             }
             /* make sure the amount of daily infections is never larger than the amount of
                people who are susceptible */
@@ -238,16 +250,23 @@ namespace QtEpidemy {
             emitAndChangeIfDiff(val,m_dailyQuarantines,CS_D_QUARANTINES);
         }
 
+        inline void calcDailyImmunityLoss() {
+            RatioType val = 0;
+
+            if(m_immunityLossRate != 0) {
+                val = m_recovered * m_immunityLossRate;
+            }
+            emitAndChangeIfDiff(val, m_dailyImmunityLoss, CS_D_IMMUNITYLOSS);
+        }
+
         inline void calcSusceptible() {
             if(m_dailyInfections != 0) {
                 RatioType val = 0;
                 val  = m_susceptible -
-                       (m_dailyInfections * DT);
+                       m_dailyInfections + m_dailyImmunityLoss * DT;
 
                 clampToZero<RatioType>(val);
                 emitAndChangeIfDiff(val, m_susceptible, CS_SUSCEPTIBLE);
-//                CDPR(QString::number(m_susceptible));
-//                emit statChanged(CS_SUSCEPTIBLE);
             }
 
 
@@ -272,9 +291,11 @@ namespace QtEpidemy {
                m_dailyQuarantinedRecoveries != 0) {
 
                 val = m_recovered + ((m_dailyInfectedRecoveries +
-                                      m_dailyQuarantinedRecoveries) * DT);
+                                      m_dailyQuarantinedRecoveries -
+                                      m_dailyImmunityLoss) * DT);
 
             }
+            clampToZero<RatioType>(val);
             emitAndChangeIfDiff(val,m_recovered, CS_RECOVERED);
         }
 

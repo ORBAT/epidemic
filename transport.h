@@ -2,6 +2,8 @@
 #define TRANSPORT_H
 
 #include <QObject>
+#include <QTime>
+#include "constants.h"
 
 class QPointF;
 
@@ -14,7 +16,8 @@ namespace QtEpidemy {
     {
         Q_OBJECT
     public:
-        explicit Transport(QObject *parent = 0);
+        // the 747's cruise speed is around 900km/h
+        explicit Transport(TransportType, QObject *parent = 0);
 
 
     signals:
@@ -25,6 +28,12 @@ namespace QtEpidemy {
     public slots:
 
     protected:
+        City* m_origin;
+        City* m_destination;
+        const TransportType m_type;
+        const qint16 m_speed; // get this from constants.h
+
+        QTime m_travelTimeLeft;
 
 
 
