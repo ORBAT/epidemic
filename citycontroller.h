@@ -54,7 +54,8 @@ namespace QtEpidemy {
         //////////
     public slots:
 
-        void createCity(const QString &name, AmountType population, const QPointF &position);
+        void createCity(const QString &name, AmountType population,
+                        const QPointF &position);
         void removeCity(const QString &name);
 
         // runs step() on each City

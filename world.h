@@ -3,18 +3,19 @@
 
 #include <QObject>
 #include "constants.h"
+#include "citycontroller.h"
+#include "city.h"
 
 class QTimer;
 
 namespace QtEpidemy {
-
-    class CityController;
 
     class World : public QObject
     {
         Q_OBJECT
     public:
         explicit World(QObject *parent = 0);
+        ~World();
 
         inline TickType getTicks() const {
             return m_ticks;
@@ -22,6 +23,12 @@ namespace QtEpidemy {
 
         inline CityController* getCityController() const {
             return m_cityController;
+        }
+
+        void createCities();
+
+        inline QList<City*> getCities() {
+            return m_cityController->getCities();
         }
 
 
@@ -35,6 +42,9 @@ namespace QtEpidemy {
 
         // changes the delay between steps
         void changeStepDelay(int);
+
+
+
     protected:
         CityController *m_cityController;
 

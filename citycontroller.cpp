@@ -20,11 +20,6 @@ namespace QtEpidemy {
 
 
     CityController::~CityController() {
-//        QHash<QString,City*>::iterator it;
-//        QHash<QString,City*>::iterator end = m_cities.end();
-//        for(it = m_cities.begin(); it != end; ++it) {
-//            delete *it;
-//        }
     }
 
     void CityController::createCity(const QString &name,

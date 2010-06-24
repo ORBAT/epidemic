@@ -18,7 +18,7 @@ namespace QtEpidemy {
 
     class AmountTypeScaleDraw : public QwtScaleDraw {
     public:
-        virtual QwtText label(double v) const {
+        QwtText label(double v) const {
             // return a decimal number without the goddamn E notation
             return QString::number(v,'f',0);
         }
@@ -26,7 +26,7 @@ namespace QtEpidemy {
 
     class RatioTypeScaleDraw : public QwtScaleDraw {
     public:
-        virtual QwtText label(double v) const {
+        QwtText label(double v) const {
             return QString::number(v,'f',2);
         }
     };
@@ -36,7 +36,7 @@ namespace QtEpidemy {
         DateScaleDraw(const QDateTime &start) : m_start(start) {}
 
 
-        virtual QwtText label(double v) const {
+        QwtText label(double v) const {
            /*
              Time is measured in ticks in-game, and DT days elapse every tick (see
              constants.h for value). The value that gets passed to label(double) is

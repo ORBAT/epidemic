@@ -1,3 +1,4 @@
+#include <QTimer>
 #include "world.h"
 #include "citycontroller.h"
 namespace QtEpidemy {
