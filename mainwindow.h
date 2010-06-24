@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QScopedPointer>
 #include "constants.h"
 
 namespace Ui {
@@ -12,7 +13,7 @@ namespace QtEpidemy {
     class City;
     class CityController;
     class Pathogen;
-
+    class World;
 
 
 
@@ -27,7 +28,8 @@ namespace QtEpidemy {
 
     protected:
         void changeEvent(QEvent *e);
-        CityController *m_cityController;
+//        CityController *m_cityController;
+        QScopedPointer<World> m_world;
 
         void additionalUiSetup();
         void connectActions();

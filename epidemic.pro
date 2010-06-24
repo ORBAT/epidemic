@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     mdiplot.cpp \
     citycontroller.cpp \
     mdisettingscontroller.cpp \
-    citytablemodel.cpp
+    citytablemodel.cpp \
+    world.cpp
 
 HEADERS  += mainwindow.h \
     city.h \
@@ -32,7 +33,8 @@ HEADERS  += mainwindow.h \
     citycontroller.h \
     mdisettingscontroller.h \
     mdisettingscontroller_p.h \
-    citytablemodel.h
+    citytablemodel.h \
+    world.h
 
 FORMS    += mainwindow.ui \
     mdiplot.ui

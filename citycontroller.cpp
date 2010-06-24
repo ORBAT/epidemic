@@ -10,8 +10,7 @@ namespace QtEpidemy {
 
 
     CityController::CityController(QObject *parent) :
-            QObject(parent), m_stepTimer(new QTimer(this)), m_stepDelay(300),
-            m_ticks(0), m_tableModel(new CityTableModel(this))
+            QObject(parent), m_tableModel(new CityTableModel(this))
     {
         connect(m_stepTimer, SIGNAL(timeout()), this, SLOT(step()));
 
@@ -47,29 +46,15 @@ namespace QtEpidemy {
             emit cityRemoved(c);
     }
 
-    void CityController::start() {
-        DPR("Starting");
-        m_stepTimer->start(m_stepDelay);
-    }
-
-    void CityController::changeStepDelay(int sd) {
-        m_stepDelay = sd;
-        m_stepTimer->start(m_stepDelay);
-    }
-
-    void CityController::pause() {
-        DPR("Pausing");
-        m_stepTimer->stop();
-    }
 
     void CityController::step() {
-        DPR(tr("%1\n\n").arg(m_ticks));
+//        DPR(tr("%1\n\n").arg(m_ticks));
         QHash<QString,City*>::iterator it;
         QHash<QString,City*>::iterator end = m_cities.end();
         for(it = m_cities.begin(); it != end; ++it) {
             it.value()->step();
         }
-        ++m_ticks;
+//        ++m_ticks;
 
     }
 

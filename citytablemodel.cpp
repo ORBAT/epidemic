@@ -75,12 +75,12 @@ namespace QtEpidemy {
             default:
                 return QVariant();
             }
-        } /*else { // Qt::Vertical
+        } else { // Qt::Vertical
             if(section < m_cityDataIndex.size())
                 return section+1;
             else
                 return QVariant();
-        }*/
+        }
 
     }
 
