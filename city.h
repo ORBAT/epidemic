@@ -47,9 +47,8 @@ namespace QtEpidemy {
             return *m_memberPointers[cs];
         }
 
-        // thread-safe since m_name is immutable
         inline QString getName() const {
-            return m_name;
+            return objectName();
         }
 
 
@@ -73,7 +72,7 @@ namespace QtEpidemy {
 
         Pathogen *m_pathogen;        // our friendly affliction, if any
 
-        const QString m_name;
+//        const QString m_name;
 
         // City-specific bonuses (can be positive OR negative) to some stats
         RatioType m_bonusDuration;

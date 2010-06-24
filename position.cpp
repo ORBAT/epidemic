@@ -8,11 +8,12 @@ namespace QtEpidemy {
         clampQPointValues(m_position);
     }
 
-    Position::Position(qreal x, qreal y) : m_position(QPointF(x,y)) {
+    Position::Position(qreal latitude, qreal longtitude) :
+            m_position(QPointF(latitude,longtitude)) {
         clampQPointValues(m_position);
     }
 
-    qreal Position::distanceTo(const Position &a,
+    qreal Position::distanceBetween(const Position &a,
                             const Position &b) {
         /*
 

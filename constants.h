@@ -23,8 +23,8 @@ namespace QtEpidemy {
 
 #define DPR(message) debugPr(Q_FUNC_INFO, message)
 
-    // use this when the class has a proper name (just City at the moment)
-#define CDPR(message) debugPr(Q_FUNC_INFO, m_name % ": " % message)
+    // use this when the class has objectName set (just City at the moment)
+#define CDPR(message) debugPr(Q_FUNC_INFO, objectName() % ": " % message)
 #define CDPR_STAT(newstat, oldstat) CDPR(tr("%1 (old %2)").arg(newstat).arg(oldstat));
 
     enum PathogenStat { PS_SURVIVALRATE, PS_CONTACTRATE, PS_DURATION,

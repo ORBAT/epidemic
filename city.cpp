@@ -8,7 +8,6 @@ namespace QtEpidemy {
                QObject *parent) :
             QObject(parent),
             m_pathogen(NULL),   // no pathogens when we start out
-            m_name(name),
             m_bonusDuration(0.0),
             m_bonusInfectionRate(0.0),
             m_bonusSurvivalRate(0.0),
@@ -37,6 +36,8 @@ namespace QtEpidemy {
     {
         //qDebug() << tr("City() %1 constructed with population %2").arg(name).arg(population);
         DPR(tr("%1 constructed with population %2").arg(name).arg(population));
+
+        setObjectName(name);
 
         // zero the member pointer array
         for(int i = 0; i < CS_MAX_STATS; ++i) {
@@ -144,7 +145,7 @@ namespace QtEpidemy {
         case PS_IMMUNITYLOSSRATE:
             m_bonusImmunityLoss = rt;
         default:
-            DPR(tr("City %2 got strange ps value %1").arg(pst).arg(m_name));
+            DPR(tr("City %2 got strange ps value %1").arg(pst).arg(objectName()));
         }
     }
 

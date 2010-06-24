@@ -26,7 +26,7 @@ namespace QtEpidemy {
         const static qreal EARTH_RADIUS = 6367.5; //in km
 
         Position(const QPointF &pos);
-        Position(qreal x, qreal y);
+        Position(qreal latitude, qreal longtitude);
 
         /**
           allows casting a Position to a QPointF
@@ -74,7 +74,7 @@ namespace QtEpidemy {
           calculates the distance between Position a and Position b using
           Haversine formula
         */
-        static qreal distanceTo(const Position &a, const Position &b);
+        static qreal distanceBetween(const Position &a, const Position &b);
 
 
 

@@ -25,7 +25,7 @@ namespace QtEpidemy {
         additionalUiSetup();
 
         CityController* m_cityController = m_world->getCityController();
-        m_cityController->createCity("Derp", 7000000, Position(42.0,42.0));
+        m_cityController->createCity("Derp", 7000000, Position(60.17,24.94));
         City *c = m_cityController->getCity("Derp");
         MdiPlot *mp = NULL;
         if(c) {
@@ -39,9 +39,9 @@ namespace QtEpidemy {
             ui->centralWidget->addSubWindow(mp, Qt::SubWindow);
         }
         connectActions();
-
-
-
+        DPR(tr("Distance between Helsinki and San Fransisco according to Position:").
+            arg(Position::distanceBetween(Position(60.17, 24.94),
+                                          Position(37.76, -122.44))));
     }
 
 
