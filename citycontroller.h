@@ -25,10 +25,6 @@ namespace QtEpidemy {
         explicit CityController(QObject *parent = 0);
         ~CityController();
 
-        inline TickType getTicks() const {
-            return m_ticks;
-        }
-
         inline City * getCity(const QString &name) const {
             return m_cities.value(name);
         }
@@ -58,13 +54,6 @@ namespace QtEpidemy {
         //////////
     public slots:
 
-        void start();
-
-        void pause();
-
-        // changes the delay between steps
-        void changeStepDelay(int);
-
         void createCity(const QString &name, AmountType population, const QPointF &position);
         void removeCity(const QString &name);
 
@@ -76,12 +65,9 @@ namespace QtEpidemy {
     protected:
         // all cities are stored by name. ***Names MUST BE UNIQUE***
         QHash<QString, City*> m_cities;
-        QTimer* m_stepTimer;
 
-        // milliseconds between steps. Defaults to 300
-        int m_stepDelay;
-        // how many ticks have elapsed
-        quint32 m_ticks;
+
+
 
         CityTableModel *m_tableModel;
 

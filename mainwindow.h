@@ -28,8 +28,7 @@ namespace QtEpidemy {
 
     protected:
         void changeEvent(QEvent *e);
-//        CityController *m_cityController;
-        QScopedPointer<World> m_world;
+        World *m_world;
 
         void additionalUiSetup();
         void connectActions();

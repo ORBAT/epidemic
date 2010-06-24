@@ -16,6 +16,13 @@ namespace QtEpidemy {
     public:
         explicit World(QObject *parent = 0);
 
+        inline TickType getTicks() const {
+            return m_ticks;
+        }
+
+        inline CityController* getCityController() const {
+            return m_cityController;
+        }
 
 
     signals:
@@ -34,7 +41,7 @@ namespace QtEpidemy {
         // milliseconds between steps. Defaults to 300
         int m_stepDelay;
         // how many ticks have elapsed
-        quint32 m_ticks;
+        TickType m_ticks;
         QTimer* m_stepTimer;
 
     };

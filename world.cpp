@@ -11,6 +11,9 @@ namespace QtEpidemy {
         connect(m_stepTimer, SIGNAL(timeout()), m_cityController, SLOT(step()));
     }
 
+    World::~World() {
+    }
+
 
     void World::start() {
         DPR("Starting");

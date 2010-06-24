@@ -7,6 +7,7 @@
 #include "city.h"
 #include "pathogen.h"
 #include "mdiplot.h"
+#include "world.h"
 #include "citycontroller.h"
 
 
@@ -15,13 +16,14 @@ namespace QtEpidemy {
 
     MainWindow::MainWindow(QWidget *parent) :
             QMainWindow(parent),
-            m_cityController(new CityController(this)),
+            m_world(new World(this)),
             ui(new Ui::MainWindow)
     {
         ui->setupUi(this);
 
         additionalUiSetup();
 
+        CityController* m_cityController = m_world->getCityController();
         m_cityController->createCity("Derp", 100000, QPointF(42.0,42.0));
         City *c = m_cityController->getCity("Derp");
         MdiPlot *mp = NULL;
@@ -34,13 +36,13 @@ namespace QtEpidemy {
 
 
     void MainWindow::connectActions() {
-        connect(ui->actionStart, SIGNAL(triggered()), m_cityController, SLOT(start()));
-        connect(ui->actionPause, SIGNAL(triggered()), m_cityController, SLOT(pause()));
+        connect(ui->actionStart, SIGNAL(triggered()), m_world, SLOT(start()));
+        connect(ui->actionPause, SIGNAL(triggered()), m_world, SLOT(pause()));
     }
 
     void MainWindow::additionalUiSetup() {
         this->setWindowState(Qt::WindowMaximized);
-        ui->tblCityData->setModel(m_cityController->getModel());
+        ui->tblCityData->setModel(m_world->getCityController()->getModel());
 //        ui->tblCityData->horizontalHeader()->
 //                setResizeMode(QHeaderView::ResizeToContents);
     }
@@ -67,7 +69,10 @@ namespace QtEpidemy {
 
 void QtEpidemy::MainWindow::on_actionInfect_city_Derp_triggered()
 {
-    QtEpidemy::City *c = m_cityController->getCities().at(qrand()%m_cityController->getCities().size());
+    CityController *m_cityController = m_world->getCityController();
+    QtEpidemy::City *c = m_cityController->
+                         getCities()
+                         .at(qrand()%m_cityController->getCities().size());
     QtEpidemy::Pathogen *p = new QtEpidemy::Pathogen(0.99, 0.00002, 10, this);
     if(c) {
         c->setPathogen(p);
@@ -86,5 +91,5 @@ void QtEpidemy::MainWindow::on_actionAdd_random_city_triggered()
     int pop = qrand()%100000000;
     qreal x = qrand()%100;
     qreal y = qrand()%100;
-    m_cityController->createCity(cityName, pop, QPointF(x,y));
+    m_world->getCityController()->createCity(cityName, pop, QPointF(x,y));
 }

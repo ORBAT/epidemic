@@ -12,7 +12,7 @@ namespace QtEpidemy {
     CityController::CityController(QObject *parent) :
             QObject(parent), m_tableModel(new CityTableModel(this))
     {
-        connect(m_stepTimer, SIGNAL(timeout()), this, SLOT(step()));
+
 
         connect(this, SIGNAL(cityAdded(City*)), m_tableModel,
                 SLOT(addCity(City*)));
@@ -20,12 +20,11 @@ namespace QtEpidemy {
 
 
     CityController::~CityController() {
-        m_stepTimer->stop();
-        QHash<QString,City*>::iterator it;
-        QHash<QString,City*>::iterator end = m_cities.end();
-        for(it = m_cities.begin(); it != end; ++it) {
-            delete *it;
-        }
+//        QHash<QString,City*>::iterator it;
+//        QHash<QString,City*>::iterator end = m_cities.end();
+//        for(it = m_cities.begin(); it != end; ++it) {
+//            delete *it;
+//        }
     }
 
     void CityController::createCity(const QString &name,

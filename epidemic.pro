@@ -23,7 +23,9 @@ SOURCES += main.cpp\
     citycontroller.cpp \
     mdisettingscontroller.cpp \
     citytablemodel.cpp \
-    world.cpp
+    world.cpp \
+    transporthub.cpp \
+    transport.cpp
 
 HEADERS  += mainwindow.h \
     city.h \
@@ -34,7 +36,9 @@ HEADERS  += mainwindow.h \
     mdisettingscontroller.h \
     mdisettingscontroller_p.h \
     citytablemodel.h \
-    world.h
+    world.h \
+    transporthub.h \
+    transport.h
 
 FORMS    += mainwindow.ui \
     mdiplot.ui
