@@ -16,6 +16,7 @@ namespace QtEpidemy {
         const static qreal EARTH_RADIUS = 6367.5; //in km
 
         Position(const QPointF &pos);
+        Position(qreal x, qreal y);
 
 
 
@@ -37,14 +38,32 @@ namespace QtEpidemy {
             clampVal(point.ry());
         }
 
+        /**
+          returns the longtitude in degrees
+          */
         inline qreal lon() const {
             return m_position.y();
         }
+
+        /**
+          longtitude but in radians
+          */
+        inline qreal lonRad() const {
+            return m_position.y() * DEG_TO_RAD;
+        }
+
 
         inline qreal lat() const {
             return m_position.x();
         }
 
+        inline qreal latRad() const {
+            return m_position.x() * DEG_TO_RAD;
+        }
+
+        /**
+          converts degrees to radians
+          */
         inline qreal degToRad(qreal deg) {
             return deg * DEG_TO_RAD;
         }
@@ -53,26 +72,7 @@ namespace QtEpidemy {
           calculates the distance between Position a and Position b using
           Haversine formula
         */
-        inline static qreal distanceTo(const Position &a,
-                                       const Position &b) {
-            /*
-
-             dlon = lon2 - lon1
-             dlat = lat2 - lat1
-             a = (sin(dlat/2))^2 + cos(lat1) * cos(lat2) * (sin(dlon/2))^2
-             c = 2 * atan2(sqrt(a), sqrt(1-a))
-             d = R * c
-
-             lon = y axis
-             lat = x axis
-
-             */
-
-//            qreal dlon = b.
-
-
-
-        }
+        static qreal distanceTo(const Position &a, const Position &b);
 
     };
 

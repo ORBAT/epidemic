@@ -9,6 +9,7 @@
 #include "mdiplot.h"
 #include "world.h"
 #include "citycontroller.h"
+#include "position.h"
 
 
 
@@ -38,6 +39,9 @@ namespace QtEpidemy {
             ui->centralWidget->addSubWindow(mp, Qt::SubWindow);
         }
         connectActions();
+
+
+
     }
 
 
