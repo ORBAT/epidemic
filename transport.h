@@ -3,10 +3,9 @@
 
 #include <QObject>
 #include <QTime>
-#include <QPointF>
 #include "constants.h"
+#include "position.h"
 
-class QPointF;
 
 namespace QtEpidemy {
 
@@ -24,14 +23,14 @@ namespace QtEpidemy {
     signals:
         void left();
         void arrived();
-        void position(const QPointF&);
+        void position(const Position&);
 
     public slots:
 
     protected:
         const City* m_origin;
         City* m_destination;
-        QPointF m_position;
+        Position m_position;
         const TransportType m_type;
         const qint16 m_speed; // get this from constants.h
 

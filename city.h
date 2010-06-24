@@ -5,8 +5,8 @@
 #include <qdebug.h>
 #include <QObject>
 #include <QVarLengthArray>
-#include <QPointF>
 #include "constants.h"
+#include "position.h"
 
 
 namespace QtEpidemy {
@@ -30,12 +30,12 @@ namespace QtEpidemy {
     ///////////////////
     public:
         explicit City(const QString &name, AmountType population,
-                      const QPointF &pos = QPointF(1.0,1.0), QObject *parent = 0);
+                      const Position &pos = Position(1.0,1.0), QObject *parent = 0);
 
         ~City();
 
         // thread-safe since m_position is immutable
-        inline const QPointF getPosition() const {
+        inline const Position getPosition() const {
             return m_position;
         }
 
@@ -150,7 +150,7 @@ namespace QtEpidemy {
         // same as above but for Pathogens.
         QVarLengthArray<RatioType*, (int)PS_MAX_STATS> m_pathStatPointers;
 
-        const QPointF m_position;
+        const Position m_position;
 
 
 

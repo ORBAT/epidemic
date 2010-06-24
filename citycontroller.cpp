@@ -1,7 +1,7 @@
 #include <QTimer>
-#include <QPointF>
 #include "city.h"
 #include "citycontroller.h"
+#include "position.h"
 
 
 
@@ -23,7 +23,8 @@ namespace QtEpidemy {
     }
 
     void CityController::createCity(const QString &name,
-                               AmountType population, const QPointF &position) {
+                                    AmountType population,
+                                    const Position &position) {
 
         City* c = new City(name, population, position, this);
         Q_ASSERT_X(!m_cities.contains(name), Q_FUNC_INFO,

@@ -11,12 +11,12 @@
 #include "constants.h"
 
 class QTimer;
-class QPointF;
 
 namespace QtEpidemy {
 
     class City;
     class CityTableModel;
+    class Position;
 
     /**
       This class is in charge of all City-related stuff, like adding and
@@ -50,7 +50,7 @@ namespace QtEpidemy {
         }
 
         void createCity(const QString &name, AmountType population,
-                        const QPointF &position);
+                        const Position &position);
         void removeCity(const QString &name);
 
     signals:

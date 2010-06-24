@@ -25,7 +25,7 @@ namespace QtEpidemy {
         additionalUiSetup();
 
         CityController* m_cityController = m_world->getCityController();
-        m_cityController->createCity("Derp", 7000000, QPointF(42.0,42.0));
+        m_cityController->createCity("Derp", 7000000, Position(42.0,42.0));
         City *c = m_cityController->getCity("Derp");
         MdiPlot *mp = NULL;
         if(c) {
@@ -100,5 +100,5 @@ void QtEpidemy::MainWindow::on_actionAdd_random_city_triggered()
     int pop = qrand()%100000000;
     qreal x = qrand()%100;
     qreal y = qrand()%100;
-    m_world->getCityController()->createCity(cityName, pop, QPointF(x,y));
+    m_world->getCityController()->createCity(cityName, pop, Position(x,y));
 }
