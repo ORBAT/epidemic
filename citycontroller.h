@@ -45,6 +45,9 @@ namespace QtEpidemy {
             return static_cast<QAbstractItemModel*>(m_tableModel);
         }
 
+        void createCity(const QString &name, AmountType population,
+                        const QPointF &position);
+        void removeCity(const QString &name);
 
     signals:
         void cityAdded(City*);
@@ -53,10 +56,6 @@ namespace QtEpidemy {
         //// SLOTS
         //////////
     public slots:
-
-        void createCity(const QString &name, AmountType population,
-                        const QPointF &position);
-        void removeCity(const QString &name);
 
         // runs step() on each City
         void step();
@@ -67,9 +66,8 @@ namespace QtEpidemy {
         // all cities are stored by name. ***Names MUST BE UNIQUE***
         QHash<QString, City*> m_cities;
 
-
-
-
+        /* For Views, and when I get up to it all plots should get their
+           data from this too */
         CityTableModel *m_tableModel;
 
     };

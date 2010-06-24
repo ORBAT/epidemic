@@ -31,6 +31,10 @@ namespace QtEpidemy {
             return m_cityController->getCities();
         }
 
+        inline City* getCity(const QString& name) const {
+            return m_cityController->getCity(name);
+        }
+
 
     signals:
 
@@ -46,6 +50,8 @@ namespace QtEpidemy {
 
 
     protected:
+        /* the CityController class is the one actually in charge of all
+           City-related stuff */
         CityController *m_cityController;
 
         // milliseconds between steps. Defaults to 300
