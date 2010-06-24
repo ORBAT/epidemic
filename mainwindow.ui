@@ -137,7 +137,7 @@
   </action>
   <action name="actionInfect_city_Derp">
    <property name="text">
-    <string>Infect City 0</string>
+    <string>Infect a random city</string>
    </property>
   </action>
   <action name="actionAdd_random_city">

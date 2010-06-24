@@ -87,7 +87,6 @@ namespace QtEpidemy {
 
     //// SLOTS
     //////////
-
     void CityTableModel::addCity(City* c) {
         DPR(tr("Adding %1 to model").arg(c->getName()));
 
