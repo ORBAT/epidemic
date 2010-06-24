@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTime>
+#include <QPointF>
 #include "constants.h"
 
 class QPointF;
@@ -28,8 +29,9 @@ namespace QtEpidemy {
     public slots:
 
     protected:
-        City* m_origin;
+        const City* m_origin;
         City* m_destination;
+        QPointF m_position;
         const TransportType m_type;
         const qint16 m_speed; // get this from constants.h
 

@@ -9,7 +9,7 @@ QT       += core gui
 TARGET = epidemic
 TEMPLATE = app
 
-DEFINES += QT_USE_FAST_CONCATENATION
+DEFINES += QT_USE_FAST_CONCATENATION _USE_MATH_DEFINES
 
 LIBS += -L /usr/local/qwt-5.2.1/lib -l qwt
 INCLUDEPATH += /usr/local/qwt-5.2.1/include
@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     citytablemodel.cpp \
     world.cpp \
     transporthub.cpp \
-    transport.cpp
+    transport.cpp \
+    position.cpp
 
 HEADERS  += mainwindow.h \
     city.h \
@@ -38,7 +39,8 @@ HEADERS  += mainwindow.h \
     citytablemodel.h \
     world.h \
     transporthub.h \
-    transport.h
+    transport.h \
+    position.h
 
 FORMS    += mainwindow.ui \
     mdiplot.ui
