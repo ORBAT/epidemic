@@ -4,7 +4,7 @@
 namespace QtEpidemy {
 
     World::World(QObject *parent) :
-            QObject(parent), m_cityController(new CityController()),
+            QObject(parent), m_cityController(new CityController(this)),
             m_stepDelay(300),
             m_ticks(0), m_stepTimer(new QTimer(this))
     {

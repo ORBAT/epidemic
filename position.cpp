@@ -48,8 +48,7 @@ var value2 = d * 3280.8399;
 
         qreal ah = pow(sin(dLat / 2.0), 2.0) + cos(lat1) *
                   cos(lat2) * pow(sin(dLon / 2.0), 2.0);
-        qreal ch = 2.0 * atan2(sqrt(ah), sqrt(1.0-ah));
-        return EARTH_RADIUS * ch;
+        return EARTH_RADIUS * 2.0 * atan2(sqrt(ah), sqrt(1.0-ah));
     }
 
 }
