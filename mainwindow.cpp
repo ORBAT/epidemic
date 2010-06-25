@@ -39,7 +39,7 @@ namespace QtEpidemy {
             ui->centralWidget->addSubWindow(mp, Qt::SubWindow);
         }
         connectActions();
-        DPR(tr("Distance between Helsinki and San Fransisco according to Position:").
+        DPR(tr("Distance between Helsinki and San Fransisco according to Position: %1").
             arg(Position::distanceBetween(Position(60.17, 24.94),
                                           Position(37.76, -122.44))));
     }

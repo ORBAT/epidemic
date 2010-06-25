@@ -26,17 +26,30 @@ namespace QtEpidemy {
          lon = y axis
          lat = x axis
 
+var R = 6371; // km
+var dLat = (lat2-lat1).toRad();
+var dLon = (lon2-lon1).toRad();
+var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) *
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+var d = R * c;
+var value2 = d * 3280.8399;
+
+
          */
 
         qreal lat1 = a.latRad();
         qreal lat2 = b.latRad();
-        qreal dlon = b.lonRad() - a.lonRad();
-        qreal dlat = lat2 - lat1;
+        qreal lon1 = a.lonRad();
+        qreal lon2 = b.lonRad();
+        qreal dLat = lat2 - lat1;
+        qreal dLon = lon2 - lon1;
 
-        qreal ah = pow(sin(dlat / 2.0), 2.0) + cos(lat1) *
-                  cos(lat2) * pow(sin(dlon / 2.0), 2.0);
-//            qreal ch = 2.0 * atan2(sqrt(ah), sqrt(1.0-ah));
-        return EARTH_RADIUS * 2.0 * atan2(sqrt(ah), sqrt(1.0-ah));
+        qreal ah = pow(sin(dLat / 2.0), 2.0) + cos(lat1) *
+                  cos(lat2) * pow(sin(dLon / 2.0), 2.0);
+        qreal ch = 2.0 * atan2(sqrt(ah), sqrt(1.0-ah));
+        return EARTH_RADIUS * ch;
     }
 
 }

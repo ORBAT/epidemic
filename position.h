@@ -23,7 +23,7 @@ namespace QtEpidemy {
     public:
         // degrees / radian
         const static qreal DEG_TO_RAD = M_PI/180;
-        const static qreal EARTH_RADIUS = 6367.5; //in km
+        const static qreal EARTH_RADIUS = 6371.0; //in km
 
         Position(const QPointF &pos);
         Position(qreal latitude, qreal longtitude);
@@ -82,18 +82,20 @@ namespace QtEpidemy {
         QPointF m_position;
 
         /**
-          Used to clamp x and y coordinates to the range -90 .. 90
+          Used to clamp x and y coordinates to the range -end .. end
           */
-        inline void clampVal(qreal& val) {
-            val = std::min(90.0, std::max(-90.0, val));
+        inline void clampVal(qreal& val, qreal end) {
+            val = std::min(end, std::max(-end, val));
         }
 
         /**
-          clamps a QPointF's X and Y coordinates to the range -90..90
+          clamps a QPointF's X and Y coordinates to proper ranges.
+          -90..90 for latitude
+          -180..180 for longtitude
           */
         inline void clampQPointValues(QPointF &point) {
-            clampVal(point.rx());
-            clampVal(point.ry());
+            clampVal(point.rx(), 90);
+            clampVal(point.ry(), 180);
         }
     };
 
