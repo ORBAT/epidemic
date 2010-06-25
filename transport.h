@@ -16,8 +16,8 @@ namespace QtEpidemy {
     {
         Q_OBJECT
     public:
-        // the 747's cruise speed is around 900km/h
-        explicit Transport(TransportType, QObject *parent = 0);
+        explicit Transport(TransportType, City* origin, City* destination,
+                           QObject *parent = 0);
 
 
     signals:
