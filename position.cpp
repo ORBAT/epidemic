@@ -61,7 +61,7 @@ namespace QtEpidemy {
         qreal y = sin(dlon) * cos(lat2);
         qreal x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dlon);
         qreal br = atan2(y, x) / DEG_TO_RAD;
-        return (br+180) % 360;
+        return (br+360) % 360;
     }
 
 }
