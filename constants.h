@@ -60,15 +60,13 @@ namespace QtEpidemy {
                               };
 
     enum TransportType {TT_PLANE = 0x0,
-                        TT_BOAT = 0x1,
-                        TT_CAR = 0x2,
-                        TT_ONFOOT = 0x4};
+                        TT_CAR = 0x1,
+                        TT_ONFOOT = 0x2};
     Q_DECLARE_FLAGS(TransportTypes, TransportType);
     // speeds of different vehicles in km/h
-    const qint16 TRANSPORT_SPEEDS[] = {900, 45, 100, 6};
+    const qint16 TRANSPORT_SPEEDS[] = {900, 100, 6};
 
     const QString TRANSPORT_NAMES[] = {QT_TR_NOOP("TT_PLANE"),
-                                       QT_TR_NOOP("TT_BOAT"),
                                        QT_TR_NOOP("TT_CAR"),
                                        QT_TR_NOOP("TT_ONFOOT")
                                       };

@@ -41,4 +41,27 @@ namespace QtEpidemy {
         return Position::distanceBetween(*this, b);
     }
 
+    /**
+      returns bearing to Position b in degrees.
+      */
+    qreal Position::bearingTo(const Position &b) {
+        /*
+        var y = Math.sin(dLon) * Math.cos(lat2);
+        var x = Math.cos(lat1)*Math.sin(lat2) -
+                Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
+        var brng = Math.atan2(y, x).toDeg();
+        */
+
+        qreal lat1 = this->latRad();
+        qreal lat2 = b.latRad();
+        qreal lon1 = this->lonRad();
+        qreal lon2 = b.lonRad();
+        qreal dlat = lat2 - lat1;
+        qreal dlon = lon2 - lon1;
+        qreal y = sin(dlon) * cos(lat2);
+        qreal x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dlon);
+        qreal br = atan2(y, x) / DEG_TO_RAD;
+        return (br+180) % 360;
+    }
+
 }

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <math.h>
 #include <QPointF>
+#include <QLocale>
 
 
 namespace QtEpidemy {
@@ -81,6 +82,15 @@ namespace QtEpidemy {
           calculates the distance between this Position and Position b
           */
         qreal distanceTo(const Position &b) const;
+
+        QString toString() const {
+            QLocale sys = QLocale::system();
+            QString Lat = sys.toString(lat(), 'f', 2);
+            QString Lon = sys.toString(lon(), 'f', 2);
+            return Lat % "N " % Lon % "E";
+        }
+
+        qreal bearingTo(const Position&);
 
 
 

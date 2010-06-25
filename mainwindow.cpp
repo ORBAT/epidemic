@@ -9,6 +9,9 @@
 #include "mdiplot.h"
 #include "world.h"
 #include "citycontroller.h"
+
+// debugging. remove when done
+#include "transport.h"
 #include "position.h"
 
 
@@ -26,7 +29,9 @@ namespace QtEpidemy {
 
         CityController* m_cityController = m_world->getCityController();
         m_cityController->createCity("Helsinki", 500000, Position(60.17,24.94));
+        m_cityController->createCity("Stockholm",1700000, Position(59.33, 18.07));
         City *c = m_cityController->getCity("Helsinki");
+        City *s = m_cityController->getCity("Stockholm");
         MdiPlot *mp = NULL;
         if(c) {
             mp = new MdiPlot(c, 100, QDateTime::currentDateTime());
@@ -45,6 +50,8 @@ namespace QtEpidemy {
         DPR(tr("Distance between Helsinki and Stockholm according to Position: %1").
             arg(Position::distanceBetween(Position(60.17, 24.94),
                                           Position(59.33, 18.07))));
+        Transport t(TT_ONFOOT, c, s, this);
+
     }
 
 
