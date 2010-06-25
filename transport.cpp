@@ -24,8 +24,8 @@ namespace QtEpidemy {
     }
 
 
-    Transport::step() {
-        m_travelTimeLeft.addHours();
+    void Transport::step() {
+//        m_travelTimeLeft.addHours();
     }
 
 

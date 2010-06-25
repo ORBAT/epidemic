@@ -41,10 +41,8 @@ namespace QtEpidemy {
         return Position::distanceBetween(*this, b);
     }
 
-    /**
-      returns bearing to Position b in degrees.
-      */
-    qreal Position::bearingTo(const Position &b) {
+
+    qreal Position::bearingTo(const Position &b) const {
         /*
         var y = Math.sin(dLon) * Math.cos(lat2);
         var x = Math.cos(lat1)*Math.sin(lat2) -
@@ -56,12 +54,38 @@ namespace QtEpidemy {
         qreal lat2 = b.latRad();
         qreal lon1 = this->lonRad();
         qreal lon2 = b.lonRad();
-        qreal dlat = lat2 - lat1;
         qreal dlon = lon2 - lon1;
         qreal y = sin(dlon) * cos(lat2);
         qreal x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dlon);
         qreal br = atan2(y, x) / DEG_TO_RAD;
-        return (br+360) % 360;
+        return br;
+//        return ((int)br+360) % 360;
     }
+
+    Position Position::moveTowards(const Position &a, qreal d, qreal b) {
+        /*
+    var lat2 = Math.asin( Math.sin(lat1)*Math.cos(d/R) +
+                      Math.cos(lat1)*Math.sin(d/R)*Math.cos(brng) );
+    var lon2 = lon1 + Math.atan2(Math.sin(brng)*Math.sin(d/R)*Math.cos(lat1),
+                             Math.cos(d/R)-Math.sin(lat1)*Math.sin(lat2));
+        */
+        qreal dpr = d/EARTH_RADIUS;
+        qreal lat1 = a.latRad();
+        qreal lon1 = a.lonRad();
+        qreal lat2 = asin(sin(lat1) * cos(dpr) +
+                          cos(lat1) * sin(dpr) * cos(b));
+        qreal lon2 = lon1 + atan2(sin(b) * sin(dpr) * cos(lat1),
+                                  cos(dpr) - sin(lat1) * sin(lat2));
+        return Position(lat2, lon2);
+    }
+
+    Position Position::moveTowards(qreal b, qreal d) const {
+        return Position::moveTowards(*this, b, d);
+    }
+
+    Position Position::moveTowards(const Position &b, qreal d) const {
+        qreal br = this->bearingTo(b);
+    }
+
 
 }
