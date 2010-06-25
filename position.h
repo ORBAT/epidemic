@@ -84,7 +84,7 @@ namespace QtEpidemy {
         /**
           Used to clamp x and y coordinates to the range -end .. end
           */
-        inline void clampVal(qreal& val, qreal end) {
+        inline void clampVal(qreal& val, const qreal &end) {
             val = std::min(end, std::max(-end, val));
         }
 
