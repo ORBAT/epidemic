@@ -62,7 +62,7 @@ namespace QtEpidemy {
 //        return ((int)br+360) % 360;
     }
 
-    Position Position::moveTowards(const Position &a, qreal d, qreal b) {
+    Position Position::moveTowards(const Position &a, qreal b, qreal d) {
         /*
     var lat2 = Math.asin( Math.sin(lat1)*Math.cos(d/R) +
                       Math.cos(lat1)*Math.sin(d/R)*Math.cos(brng) );
