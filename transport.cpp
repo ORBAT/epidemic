@@ -26,11 +26,18 @@ namespace QtEpidemy {
 
 
     void Transport::step() {
-        /* DT days elapse each step which makes DT*24 hours */
+        /* DT days elapse each step which makes DT*24 hours.
+           m_speed is speed in km/h, so time traveled during each step is
+           m_speed * DT*24
+           */
         m_travelTimeLeft.addHours(-DT*24);
         if(!m_travelTimeLeft) { // zero travel time left
             emit arrived(m_destination);
         } else {
+            qreal travelDist = m_speed*DT*24;
+            // travel travelDist km towards destination City's Position
+            m_position = m_position.moveTowards(m_destination->getPosition(),
+                                                travelDist);
 
         }
     }
