@@ -37,4 +37,8 @@ namespace QtEpidemy {
         Transport t(TT_ONFOOT, c, s, this);
     }
 
+    void BadTesting::doTests() {
+        doPositionTesting();
+    }
+
 }
