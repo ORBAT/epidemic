@@ -57,9 +57,8 @@ namespace QtEpidemy {
         qreal dlon = lon2 - lon1;
         qreal y = sin(dlon) * cos(lat2);
         qreal x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dlon);
-        qreal br = atan2(y, x) / DEG_TO_RAD;
+        qreal br = atan2(y, x);
         return br;
-//        return ((int)br+360) % 360;
     }
 
     Position Position::moveTowards(const Position &a, qreal b, qreal d) {

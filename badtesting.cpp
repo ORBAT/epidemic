@@ -31,7 +31,7 @@ namespace QtEpidemy {
             arg(c->getPosition().bearingToInDegrees(s->getPosition())));
 
         DPR(tr("Point 42km from Helsinki at a bearing of 42 degrees: %1 (should be ~60.449N 25.452E)").
-            arg(Position::moveTowards(c->getPosition(), 42*Position::DEG_TO_RAD, 42).toString())
+            arg(Position::moveTowards(c->getPosition(), Position::degToRad(42), 42).toString())
             );
 
         Transport t(TT_ONFOOT, c, s, this);

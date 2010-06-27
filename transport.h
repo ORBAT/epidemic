@@ -26,6 +26,10 @@ namespace QtEpidemy {
         public:
             Time(qint32 seconds) : m_seconds(seconds) {}
 
+            //allows using Time in a bool context like, say, an if()
+            operator bool() const {
+                return m_seconds; //ie. true if > 0 and false if 0
+            }
 
             int day() const {
                 return m_seconds / SECS_PER_DAY;
@@ -89,14 +93,17 @@ namespace QtEpidemy {
 
 
     signals:
-        void left();
-        void arrived();
-        void position(const Position&);
+        void left(City*);
+        void arrived(City*);
+        void position(const Position&, const qreal bearing);
         void timeLeft(const Transport::Time&);
-        void bearing(const qreal);
+        void destinationChanged(City*);
 
     public slots:
         void step();
+
+    protected slots:
+        void changeDestination(City*);
 
     protected:
         const City* m_origin;

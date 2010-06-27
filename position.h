@@ -48,7 +48,7 @@ namespace QtEpidemy {
           longitude but in radians
           */
         inline qreal lonRad() const {
-            return lon() * DEG_TO_RAD;
+            return degToRad(lon());
         }
 
         /**
@@ -62,14 +62,21 @@ namespace QtEpidemy {
           latitude in radians
           */
         inline qreal latRad() const {
-            return lat() * DEG_TO_RAD;
+            return degToRad(lat());
         }
 
         /**
           converts degrees to radians
           */
-        inline qreal degToRad(qreal deg) {
+        inline static qreal degToRad(qreal deg) {
             return deg * DEG_TO_RAD;
+        }
+
+        /**
+          converst radians to degrees
+          */
+        inline static qreal radToDeg(qreal rad) {
+            return rad / DEG_TO_RAD;
         }
 
         /**
@@ -90,9 +97,12 @@ namespace QtEpidemy {
             return Lat % "N " % Lon % "E";
         }
 
-        // returns bearing in degrees instead of radians
+        /* returns bearing in degrees instead of radians. This has its own
+           dedicated function since the conversion is a bit more involved than
+           calling Position::radToDeg() */
         inline int bearingToInDegrees(const Position& b) const {
-            return ((int)bearingTo(b)+360) % 360;        }
+            return ((int)radToDeg(bearingTo(b))+360) % 360;
+        }
 
         /**
           returns bearing to Position b in radians, between -pi and +pi.
@@ -108,7 +118,7 @@ namespace QtEpidemy {
 
         /**
           returns the destination point when moving d kilometers from
-          this Position towards bearing b (in degrees). Uses the static
+          this Position towards bearing b (in RADIANS). Uses the static
           moveTowards(Position,qreal,qreal) function.
         */
         Position moveTowards(qreal b, qreal d) const;

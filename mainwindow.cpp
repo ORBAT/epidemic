@@ -43,6 +43,8 @@ namespace QtEpidemy {
             ui->centralWidget->addSubWindow(mp, Qt::SubWindow);
         }
         connectActions();
+        BadTesting t;
+        t.doTests();
 
     }
 

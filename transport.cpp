@@ -21,11 +21,22 @@ namespace QtEpidemy {
             arg(m_destination->getPosition().toString()).
             arg(m_travelTimeLeft.toString()).
             arg(m_travelTimeLeft.toSeconds()));
+
     }
 
 
     void Transport::step() {
-//        m_travelTimeLeft.addHours();
+        /* DT days elapse each step which makes DT*24 hours */
+        m_travelTimeLeft.addHours(-DT*24);
+        if(!m_travelTimeLeft) { // zero travel time left
+            emit arrived(m_destination);
+        } else {
+
+        }
+    }
+
+    void Transport::changeDestination(City *c) {
+        DPR(tr("Destination changed to %1").arg(c->getName()));
     }
 
 
