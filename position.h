@@ -90,7 +90,8 @@ namespace QtEpidemy {
             return Lat % "N " % Lon % "E";
         }
 
-        inline int bearingToDeg(const Position& b) const {
+        // returns bearing in degrees instead of radians
+        inline int bearingToInDegrees(const Position& b) const {
             return ((int)bearingTo(b)+360) % 360;        }
 
         /**
@@ -100,19 +101,21 @@ namespace QtEpidemy {
 
         /**
           returns the Position that is d kilometers towards Position b from
-          this Position.
+          this Position. Uses the static moveTowards(Position,qreal,qreal)
+          function.
           */
         Position moveTowards(const Position& b, qreal d) const;
 
         /**
           returns the destination point when moving d kilometers from
-          this Position towards bearing b (in degrees)
+          this Position towards bearing b (in degrees). Uses the static
+          moveTowards(Position,qreal,qreal) function.
         */
         Position moveTowards(qreal b, qreal d) const;
 
         /**
-         returns the Position that is d kilometers on bearing b from Position
-         a
+         returns the Position that is d kilometers on bearing b (in RADIANS)
+         from Position a.
         */
         static Position moveTowards(const Position &a, qreal b, qreal d);
 

@@ -76,7 +76,7 @@ namespace QtEpidemy {
                           cos(lat1) * sin(dpr) * cos(b));
         qreal lon2 = lon1 + atan2(sin(b) * sin(dpr) * cos(lat1),
                                   cos(dpr) - sin(lat1) * sin(lat2));
-        return Position(lat2, lon2);
+        return Position(lat2/DEG_TO_RAD, lon2/DEG_TO_RAD);
     }
 
     Position Position::moveTowards(qreal b, qreal d) const {
@@ -85,6 +85,7 @@ namespace QtEpidemy {
 
     Position Position::moveTowards(const Position &b, qreal d) const {
         qreal br = this->bearingTo(b);
+        return Position::moveTowards(b, br, d);
     }
 
 
