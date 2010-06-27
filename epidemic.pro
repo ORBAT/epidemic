@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     world.cpp \
     transporthub.cpp \
     transport.cpp \
-    position.cpp
+    position.cpp \
+    badtesting.cpp
 
 HEADERS  += mainwindow.h \
     city.h \
@@ -40,7 +41,8 @@ HEADERS  += mainwindow.h \
     world.h \
     transporthub.h \
     transport.h \
-    position.h
+    position.h \
+    badtesting.h
 
 FORMS    += mainwindow.ui \
     mdiplot.ui
