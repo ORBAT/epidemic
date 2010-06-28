@@ -18,6 +18,10 @@ namespace QtEpidemy {
         Q_OBJECT
 
     public:
+        explicit Transport(TransportType, City* origin, City* destination,
+                           quint16* passengerArray,
+                           QObject *parent = 0);
+
 
 
         /**
@@ -137,11 +141,6 @@ namespace QtEpidemy {
         };
 
 
-        explicit Transport(TransportType, City* origin, City* destination,
-                           quint16* passengerArray,
-                           QObject *parent = 0);
-
-
     signals:
         void left(City*);
         void arrived(City*);
@@ -173,9 +172,12 @@ namespace QtEpidemy {
          */
         quint16 m_passengers[PT_MAX_TYPES];
 
+        Transport::Time m_travelTimeLeft;
+
+
         static quint32 s_transportId;
 
-        Transport::Time m_travelTimeLeft;
+
 
 
     };

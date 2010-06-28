@@ -18,6 +18,12 @@ namespace QtEpidemy {
 
         QScopedArrayPointer<quint16> scaPassengers(passengers);
 
+        for(int i = 0; i < PT_MAX_TYPES; ++i) {
+            m_passengers[i] = scaPassengers[i];
+            CDPR(tr("Passenger type %1, amount %2").arg(PASSENGER_TYPE_NAMES[i]).
+                                                    arg(scaPassengers[i]));
+        }
+
         DPR(tr("Transport %1 speed %2 from %3 to %4 (%5->%6). ETA %7 (%8s)").
             arg(objectName()).
             arg(m_speed).
