@@ -5,6 +5,12 @@
 
 namespace QtEpidemy {
 
+    /**
+    Meant to be used in Cities. TransportHubs handle all traffic to and from
+    a City.
+
+    Think of them as airports, bus stations etc.
+    */
 
 
     class TransportHub : public QObject
