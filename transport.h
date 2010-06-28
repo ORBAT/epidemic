@@ -112,6 +112,8 @@ namespace QtEpidemy {
         const TransportType m_type;
         const qint16 m_speed; // get this from constants.h
 
+        static quint32 s_transportId;
+
         Transport::Time m_travelTimeLeft;
 
 

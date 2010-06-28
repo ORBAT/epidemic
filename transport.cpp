@@ -12,8 +12,11 @@ namespace QtEpidemy {
             m_travelTimeLeft((m_position.distanceTo(m_destination->getPosition()) /
                               m_speed) * 60 * 60) // travel time in seconds
     {
+        this->setObjectName(TRANSPORT_NAMES[m_type] %
+                            "-" % QString::number(s_transportId++));
+
         DPR(tr("Transport %1 speed %2 from %3 to %4 (%5->%6). ETA %7 (%8s)").
-            arg((quintptr)this).
+            arg(objectName()).
             arg(m_speed).
             arg(m_origin->getName()).
             arg(m_destination->getName()).
@@ -29,7 +32,10 @@ namespace QtEpidemy {
         /* DT days elapse each step which makes DT*24 hours.
            m_speed is speed in km/h, so time traveled during each step is
            m_speed * DT*24
-           */
+        */
+
+
+
         m_travelTimeLeft.addHours(-DT*24);
         if(!m_travelTimeLeft) { // zero travel time left
             emit arrived(m_destination);
@@ -38,7 +44,6 @@ namespace QtEpidemy {
             // travel travelDist km towards destination City's Position
             m_position = m_position.moveTowards(m_destination->getPosition(),
                                                 travelDist);
-
         }
     }
 
@@ -46,5 +51,7 @@ namespace QtEpidemy {
         DPR(tr("Destination changed to %1").arg(c->getName()));
     }
 
+
+    quint32 Transport::s_transportId = 0;
 
 }

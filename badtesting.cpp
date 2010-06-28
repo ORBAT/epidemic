@@ -6,15 +6,15 @@ namespace QtEpidemy {
 
 
     BadTesting::BadTesting(QObject *parent) :
-            QObject(parent)
+            QObject(parent), c(new City("Helsinki", 500000, Position(60.17,24.94))),
+            s(new City("Stockholm",1700000, Position(59.33, 18.07)))
     {
     }
 
 
     void BadTesting::doPositionTesting() {
 
-        City *c = new City("Helsinki", 500000, Position(60.17,24.94));
-        City *s = new City("Stockholm",1700000, Position(59.33, 18.07));
+
 
         Position sanfran(37.76, -122.44);
         DPR(tr("Distance between Helsinki and San Fransisco according to Position: %1 (should be ~8724.73)").
@@ -33,12 +33,16 @@ namespace QtEpidemy {
         DPR(tr("Point 42km from Helsinki at a bearing of 42 degrees: %1 (should be ~60.449N 25.452E)").
             arg(Position::moveTowards(c->getPosition(), Position::degToRad(42), 42).toString())
             );
+    }
 
+    void BadTesting::doTransportTesting() {
         Transport t(TT_ONFOOT, c, s, this);
+
     }
 
     void BadTesting::doTests() {
         doPositionTesting();
+        doTransportTesting();
     }
 
 }

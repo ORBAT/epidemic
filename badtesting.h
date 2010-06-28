@@ -5,12 +5,18 @@
 #include <QObject>
 
 namespace QtEpidemy {
+    /**
+    yeah, yeah. I know. I should use QTestLib, but I just couldn't get it to
+    co-operate. */
+    class City;
     class BadTesting : public QObject
     {
         Q_OBJECT
     public:
+        City *c, *s;
         explicit BadTesting(QObject *parent = 0);
         void doPositionTesting();
+        void doTransportTesting();
         void doTests();
 
     signals:

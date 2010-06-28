@@ -57,19 +57,32 @@ namespace QtEpidemy {
                                QT_TR_NOOP("CS_QUAR_RATE"),
                                QT_TR_NOOP("CS_POPULATION"),
                                QT_TR_NOOP("CS_MAX_STATS")
-                              };
+                               };
 
-    enum TransportType {TT_PLANE = 0x0,
-                        TT_CAR = 0x1,
-                        TT_ONFOOT = 0x2};
-    Q_DECLARE_FLAGS(TransportTypes, TransportType);
-    // speeds of different vehicles in km/h
-    const qint16 TRANSPORT_SPEEDS[] = {900, 100, 6};
+    enum TransportType {TT_PLANE,
+                        TT_CAR,
+                        TT_BOAT,
+                        TT_ONFOOT};
+
 
     const QString TRANSPORT_NAMES[] = {QT_TR_NOOP("TT_PLANE"),
                                        QT_TR_NOOP("TT_CAR"),
+                                       QT_TR_NOOP("TT_BOAT"),
                                        QT_TR_NOOP("TT_ONFOOT")
-                                      };
+                                       };
+
+    enum PassengerType {PT_SUSCEPTIBLE,
+                        PT_INFECTED,
+                        PT_MAX_TYPES};
+
+    const QString PASSENGER_TYPE_NAMES[] = {QT_TR_NOOP("PT_SUSCEPTIBLE"),
+                                            QT_TR_NOOP("PT_INFECTED"),
+                                            QT_TR_NOOP("PT_MAX_TYPES")
+                                            };
+
+
+    // speeds of different vehicles in km/h
+    const qint16 TRANSPORT_SPEEDS[] = {900, 100, 45, 6};
 
 
     const Qt::GlobalColor CURVE_PENCOLORS[] = {Qt::red, Qt::green, Qt::blue, Qt::cyan, Qt::magenta,
@@ -87,7 +100,5 @@ namespace QtEpidemy {
         }
     }
 }
-
-Q_DECLARE_OPERATORS_FOR_FLAGS(QtEpidemy::TransportTypes);
 
 #endif // CONSTANTS_H
