@@ -19,7 +19,7 @@ namespace QtEpidemy {
 
     public:
         explicit Transport(TransportType, City* origin, City* destination,
-                           quint16* passengerArray,
+                           quint16 passengerArray[],
                            QObject *parent = 0);
 
 

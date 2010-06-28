@@ -36,7 +36,9 @@ namespace QtEpidemy {
     }
 
     void BadTesting::doTransportTesting() {
-        Transport t(TT_ONFOOT, c, s, 0);
+//        Transport t(TT_ONFOOT, c, s, );
+    quint16 arr[] = {1,2};
+    Transport car(TT_CAR, c, s, arr ,0);
 
     }
 

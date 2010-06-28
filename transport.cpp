@@ -5,7 +5,7 @@
 namespace QtEpidemy {
 
     Transport::Transport(TransportType t, City* origin, City* destination,
-                         quint16* passengers,
+                         quint16 passengers[],
                          QObject *parent) :
             QObject(parent), m_origin(origin),
             m_destination(destination), m_position(origin->getPosition()),
@@ -16,12 +16,12 @@ namespace QtEpidemy {
         this->setObjectName(TRANSPORT_NAMES[m_type] %
                             "-" % QString::number(s_transportId++));
 
-        QScopedArrayPointer<quint16> scaPassengers(passengers);
+//        QScopedArrayPointer<quint16> scaPassengers(passengers);
 
         for(int i = 0; i < PT_MAX_TYPES; ++i) {
-            m_passengers[i] = scaPassengers[i];
+            m_passengers[i] = passengers[i];
             CDPR(tr("Passenger type %1, amount %2").arg(PASSENGER_TYPE_NAMES[i]).
-                                                    arg(scaPassengers[i]));
+                                                    arg(passengers[i]));
         }
 
         DPR(tr("Transport %1 speed %2 from %3 to %4 (%5->%6). ETA %7 (%8s)").
