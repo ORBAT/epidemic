@@ -46,6 +46,13 @@ namespace QtEpidemy {
     Position p = boat.position();
     Position nextp = p.moveTowards(s->getPosition(),
                                    TRANSPORT_SPEEDS[TT_BOAT]*DT*24);
+    DPR(tr("Starting out at %1, should end up at %2 after traveling %3 km").
+        arg(p.toString()).
+        arg(nextp.toString()).
+        arg(TRANSPORT_SPEEDS[TT_BOAT]*DT*24)
+        );
+    DPR(tr("Distance between those points is %1").arg(p.distanceTo(nextp)));
+    Q_ASSERT((int)p.distanceTo(nextp) == 30);
 
     DPR(tr("DT is %1 HOUR(S). Boat speed is %2 km/h. Boat reports %3 travel time"
             " left before step()").
