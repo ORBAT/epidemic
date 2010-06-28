@@ -127,7 +127,7 @@ namespace QtEpidemy {
          returns the Position that is d kilometers on bearing b (in RADIANS)
          from Position a.
         */
-        static Position moveTowards(const Position &a, qreal b, qreal d);
+        static Position moveFrom(const Position &a, qreal b, qreal d);
 
 
 

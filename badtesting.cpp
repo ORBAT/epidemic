@@ -35,8 +35,11 @@ namespace QtEpidemy {
             arg(c->getPosition().moveTowards(s->getPosition(), 42).toString())
         );
 
-        DPR(tr("Point 42km from Helsinki at a bearing of 42 degrees: %1 (should be ~60.449N 25.452E)").
-            arg(Position::moveTowards(c->getPosition(), Position::degToRad(42), 42).toString())
+        DPR(tr("Using moveFrom() the result is %1").
+            arg(Position::moveFrom(s->getPosition(), 259, 42).toString()));
+
+        DPR(tr("Point 42km from Helsinki at a bearing of 259 degrees: %1 (should be ~60.09583N, 24.19639E)").
+            arg(Position::moveFrom(c->getPosition(), Position::degToRad(259), 42).toString())
             );
 
 
@@ -59,7 +62,7 @@ namespace QtEpidemy {
         arg(TRANSPORT_SPEEDS[TT_BOAT]*DT*24)
         );
     DPR(tr("Distance between those points is %1").arg(p.distanceTo(nextp)));
-    Q_ASSERT((int)p.distanceTo(nextp) == 30);
+    Q_ASSERT((p.distanceTo(nextp) - 30.0) < 0.5); // 0.5 is small enough
 
     DPR(tr("DT is %1 HOUR(S). Boat speed is %2 km/h. Boat reports %3 travel time"
             " left before step()").

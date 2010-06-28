@@ -61,7 +61,7 @@ namespace QtEpidemy {
         return br;
     }
 
-    Position Position::moveTowards(const Position &a, qreal b, qreal d) {
+    Position Position::moveFrom(const Position &a, qreal b, qreal d) {
         /*
     var lat2 = Math.asin( Math.sin(lat1)*Math.cos(d/R) +
                       Math.cos(lat1)*Math.sin(d/R)*Math.cos(brng) );
@@ -79,12 +79,12 @@ namespace QtEpidemy {
     }
 
     Position Position::moveTowards(qreal b, qreal d) const {
-        return Position::moveTowards(*this, b, d);
+        return Position::moveFrom(*this, b, d);
     }
 
     Position Position::moveTowards(const Position &b, qreal d) const {
         qreal br = this->bearingTo(b);
-        return Position::moveTowards(b, br, d);
+        return Position::moveFrom(*this, br, d);
     }
 
 
