@@ -156,8 +156,14 @@ namespace QtEpidemy {
         void changeDestination(City*);
 
     protected:
-        const City* m_origin;
+        // Where the Transport is coming from. Should never change.
+        const City* const m_origin;
+
+        /* Where the Transport is headed. This might change, depending on the
+           situation (say some City stops receiving passengers etc.) */
         City* m_destination;
+
+        // Where am I? DEAR GOD WHERE AM I? I'M LOST! HALP!
         Position m_position;
         const TransportType m_type;
         const qint16 m_speed; // get this from constants.h
@@ -170,7 +176,6 @@ namespace QtEpidemy {
         static quint32 s_transportId;
 
         Transport::Time m_travelTimeLeft;
-
 
 
     };

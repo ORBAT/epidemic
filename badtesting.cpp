@@ -36,7 +36,7 @@ namespace QtEpidemy {
     }
 
     void BadTesting::doTransportTesting() {
-        Transport t(TT_ONFOOT, c, s, this);
+        Transport t(TT_ONFOOT, c, s, 0);
 
     }
 
