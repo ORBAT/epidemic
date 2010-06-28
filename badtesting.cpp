@@ -29,10 +29,17 @@ namespace QtEpidemy {
 
         DPR(tr("Initial bearing from Helsinki to Stockholm is %1 (should be ~259)").
             arg(c->getPosition().bearingToInDegrees(s->getPosition())));
+            Q_ASSERT(c->getPosition().bearingToInDegrees(s->getPosition()) == 260);
+
+        DPR(tr("Traveling 42km from Helsinki towards Stockholm brings us to %1").
+            arg(c->getPosition().moveTowards(s->getPosition(), 42).toString())
+        );
 
         DPR(tr("Point 42km from Helsinki at a bearing of 42 degrees: %1 (should be ~60.449N 25.452E)").
             arg(Position::moveTowards(c->getPosition(), Position::degToRad(42), 42).toString())
             );
+
+
     }
 
     void BadTesting::doTransportTesting() {
