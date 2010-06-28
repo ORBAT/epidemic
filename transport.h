@@ -19,10 +19,8 @@ namespace QtEpidemy {
 
     public:
         explicit Transport(TransportType, City* origin, City* destination,
-                           quint16 passengerArray[],
+                           const QList<quint16> passengerList,
                            QObject *parent = 0);
-
-
 
         /**
         Convenience class for keeping track of time. Unlike QTime, Time can

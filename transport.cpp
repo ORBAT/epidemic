@@ -5,7 +5,7 @@
 namespace QtEpidemy {
 
     Transport::Transport(TransportType t, City* origin, City* destination,
-                         quint16 passengers[],
+                         const QList<quint16> passengers,
                          QObject *parent) :
             QObject(parent), m_origin(origin),
             m_destination(destination), m_position(origin->getPosition()),
@@ -13,15 +13,15 @@ namespace QtEpidemy {
             m_travelTimeLeft((m_position.distanceTo(m_destination->getPosition()) /
                               m_speed) * 60 * 60) // travel time in seconds
     {
+        Q_ASSERT_X(passengers.size() == PT_MAX_TYPES, Q_FUNC_INFO,
+                   "Amount of passenger types must be exactly PT_MAX_TYPES");
         this->setObjectName(TRANSPORT_NAMES[m_type] %
                             "-" % QString::number(s_transportId++));
 
-//        QScopedArrayPointer<quint16> scaPassengers(passengers);
-
         for(int i = 0; i < PT_MAX_TYPES; ++i) {
-            m_passengers[i] = passengers[i];
+            m_passengers[i] = passengers.at(i);
             CDPR(tr("Passenger type %1, amount %2").arg(PASSENGER_TYPE_NAMES[i]).
-                                                    arg(passengers[i]));
+                                                    arg(m_passengers[i]));
         }
 
         DPR(tr("Transport %1 speed %2 from %3 to %4 (%5->%6). ETA %7 (%8s)").

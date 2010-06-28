@@ -14,7 +14,7 @@ namespace QtEpidemy {
 
     void BadTesting::doPositionTesting() {
 
-
+        DPR("Starting Position tests...\n\n");
 
         Position sanfran(37.76, -122.44);
         DPR(tr("Distance between Helsinki and San Fransisco according to Position: %1 (should be ~8724.73)").
@@ -36,8 +36,10 @@ namespace QtEpidemy {
     }
 
     void BadTesting::doTransportTesting() {
+    DPR("Starting Transport tests...\n\n");
 //        Transport t(TT_ONFOOT, c, s, );
-    quint16 arr[] = {1,2};
+    QList<quint16> arr;
+    arr << 1 << 2;
     Transport car(TT_CAR, c, s, arr ,0);
 
     }
