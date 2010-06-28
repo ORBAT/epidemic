@@ -138,6 +138,16 @@ namespace QtEpidemy {
             int m_seconds;
         };
 
+        //// END OF TIME CLASS
+        //////////////////////
+
+        inline Time travelTimeLeft() const {
+            return m_travelTimeLeft;
+        }
+
+        inline Position position() const {
+            return m_position;
+        }
 
     signals:
         void left(City*);

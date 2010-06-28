@@ -82,7 +82,7 @@ namespace QtEpidemy {
 
 
     // speeds of different vehicles in km/h
-    const qint16 TRANSPORT_SPEEDS[] = {800, 80, 45, 6};
+    const qint16 TRANSPORT_SPEEDS[] = {800, 80, 30, 6};
 
 
     const Qt::GlobalColor CURVE_PENCOLORS[] = {Qt::red, Qt::green, Qt::blue, Qt::cyan, Qt::magenta,

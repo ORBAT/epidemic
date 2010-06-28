@@ -43,10 +43,9 @@ namespace QtEpidemy {
            m_speed * DT*24
         */
 
-
-
         m_travelTimeLeft.addHours(-DT*24);
         if(!m_travelTimeLeft) { // zero travel time left
+            CDPR(tr("Arrived at %1").arg(m_destination->getName()));
             emit arrived(m_destination);
         } else {
             qreal travelDist = m_speed*DT*24;

@@ -40,7 +40,19 @@ namespace QtEpidemy {
 //        Transport t(TT_ONFOOT, c, s, );
     QList<quint16> arr;
     arr << 1 << 2;
-    Transport car(TT_CAR, c, s, arr ,0);
+    DPR("Time to Stockholm should be about 13h 11min");
+    Transport boat(TT_BOAT, c, s, arr ,0);
+
+    Position p = boat.position();
+    Position nextp = p.moveTowards(s->getPosition(),
+                                   TRANSPORT_SPEEDS[TT_BOAT]*DT*24);
+
+    DPR(tr("DT is %1 HOUR(S). Boat speed is %2 km/h. Boat reports %3 travel time"
+            " left before step()").
+          arg(DT*24.0).arg(TRANSPORT_SPEEDS[TT_BOAT]).
+          arg(boat.travelTimeLeft().toString()));
+
+
 
     }
 
