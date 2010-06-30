@@ -13,8 +13,7 @@ namespace QtEpidemy {
         Q_OBJECT
     public:
         explicit Pathogen(RatioType survival = 1, RatioType infection = 0,
-                          RatioType duration = 0, RatioType immLoss = 0,
-                          QObject *parent = 0);
+                          RatioType duration = 0, QObject *parent = 0);
 
         const RatioType* getPathogenStats() const;
 

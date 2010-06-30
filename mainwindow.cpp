@@ -87,8 +87,7 @@ void QtEpidemy::MainWindow::on_actionInfect_city_Derp_triggered()
     QtEpidemy::City *c = m_cityController->
                          getCities()
                          .at(qrand()%m_cityController->getCities().size());
-    QtEpidemy::Pathogen *p = new QtEpidemy::Pathogen(0.99, 0.0000001, 10, 0.05,
-                                                     this);
+    QtEpidemy::Pathogen *p = new QtEpidemy::Pathogen(0.99, 0.0000001, 10, this);
     if(c) {
         c->setPathogen(p);
         c->addInfected(1);
