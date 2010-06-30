@@ -40,10 +40,13 @@ namespace QtEpidemy {
            PS_DURATION          duration of the disease in days
 
            PS_SURVIVALRATE      survival rate, ie. the probability of surviving
-                                once infected
+                                once infected. A lower survival rate leads to a
+                                higher visibility.
 
            PS_IMMUNITYLOSSRATE  average loss of immunity rate for recovered
                                 individuals
+
+           PS_VISIBILITY        how noticeable the infection is. 0-1.
 
            */
         RatioType m_stats[PS_MAX_STATS];
